@@ -45,6 +45,7 @@ export default async function DashboardLayout({
           date={wedding.date ? formatDate(wedding.date) : "Date TBD"}
           city={wedding.city ?? ""}
           eventCount={eventCount}
+          userEmail={user.email ?? ""}
         />
         <DashboardNav />
         {children}

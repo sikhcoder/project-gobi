@@ -2,17 +2,33 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+function getOrigin(request: Request): string {
+  // Behind a reverse proxy (Railway, Vercel, etc.), request.url shows the internal
+  // origin (localhost:3000). Use forwarded headers to get the real public origin.
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
+
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+
+  const host = request.headers.get("host");
+  if (host && !host.startsWith("localhost")) {
+    return `${forwardedProto}://${host}`;
+  }
+
+  // Fallback for local dev
+  return new URL(request.url).origin;
+}
+
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = getOrigin(request);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
 
-  console.log("[auth/callback] code:", code ? `${code.slice(0, 8)}...` : "MISSING");
-  console.log("[auth/callback] origin:", origin);
-
   if (code) {
     const cookieStore = await cookies();
-
     const pendingCookies: Array<{ name: string; value: string; options: CookieOptions }> = [];
 
     const supabase = createServerClient(
@@ -32,12 +48,7 @@ export async function GET(request: Request) {
       }
     );
 
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-    console.log("[auth/callback] exchange error:", error?.message ?? "none");
-    console.log("[auth/callback] user:", data?.user?.id ?? "null");
-    console.log("[auth/callback] pendingCookies count:", pendingCookies.length);
-    pendingCookies.forEach((c) => console.log("  cookie:", c.name, "options:", JSON.stringify(c.options)));
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
       const response = NextResponse.redirect(`${origin}${next}`);
@@ -48,6 +59,5 @@ export async function GET(request: Request) {
     }
   }
 
-  console.log("[auth/callback] falling through to error redirect");
   return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
 }

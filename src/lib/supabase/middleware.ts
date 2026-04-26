@@ -25,18 +25,11 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh session — must call getUser(), not getSession()
   const {
     data: { user },
-    error: getUserError,
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-
-  if (pathname.startsWith("/dashboard")) {
-    const sbCookies = request.cookies.getAll().filter((c) => c.name.startsWith("sb-"));
-    console.log(`[middleware] ${pathname} | user: ${user?.id ?? "null"} | getUser error: ${getUserError?.message ?? "none"} | sb-cookies: ${sbCookies.map((c) => c.name).join(", ") || "NONE"}`);
-  }
 
   const protectedPrefixes = ["/dashboard", "/admin", "/vendor"];
   const authPaths = ["/login", "/signup"];

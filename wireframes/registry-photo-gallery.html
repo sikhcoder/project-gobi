@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registry & photo gallery — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .sl { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+    .page-header h2 { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+    .page-header p { font-size: 13px; color: #888; }
+    .btn-primary { padding: 7px 14px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 12px; font-weight: 500; cursor: pointer; }
+    .btn-outline { padding: 7px 14px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; background: transparent; cursor: pointer; }
+    .info-banner { background: #EEEDFE; border: 0.5px solid #AFA9EC; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #3C3489; line-height: 1.5; }
+    .reg-url-row { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .reg-url-logo { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+    .reg-url-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .reg-url-link { font-size: 11px; color: #534AB7; }
+    .reg-url-actions { margin-left: auto; display: flex; gap: 6px; }
+    .reg-url-btn { padding: 4px 10px; border-radius: 6px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 11px; color: #888; background: transparent; cursor: pointer; }
+    .registry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .reg-card { border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; }
+    .reg-card:hover { border-color: rgba(0,0,0,0.2); }
+    .reg-logo { height: 32px; border-radius: 6px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; padding: 0 10px; }
+    .reg-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+    .reg-desc { font-size: 11px; color: #888; margin-bottom: 10px; }
+    .reg-status { font-size: 11px; padding: 3px 8px; border-radius: 8px; font-weight: 500; display: inline-block; background: #f5f4f0; color: #888; }
+    .upload-zone { border: 1.5px dashed rgba(0,0,0,0.15); border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; margin-bottom: 20px; }
+    .upload-zone h3 { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+    .upload-zone p { font-size: 13px; color: #888; margin-bottom: 8px; }
+    .upload-zone span { font-size: 12px; color: #888; }
+    .album-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .album-tab { padding: 6px 14px; border-radius: 20px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; cursor: pointer; }
+    .album-tab.active { background: #534AB7; border-color: #534AB7; color: #fff; font-weight: 500; }
+    .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+    .photo-swatch { height: 90px; border-radius: 8px; }
+    .gallery-settings { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .gs-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .gs-row:last-child { border-bottom: none; }
+    .gs-label { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .gs-sub { font-size: 11px; color: #888; }
+    .toggle { width: 36px; height: 20px; border-radius: 10px; background: #534AB7; position: relative; cursor: pointer; flex-shrink: 0; }
+    .toggle::after { content: ''; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+    .toggle.off { background: rgba(0,0,0,0.15); }
+    .toggle.off::after { right: auto; left: 2px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Registry & photo gallery — Indian wedding platform</h1>
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('registry')">Registry</div>
+    <div class="tab" onclick="showTab('gallery')">Photo gallery</div>
+    <div class="tab" onclick="showTab('guestsee')">Guest view</div>
+  </div>
+
+  <div id="tab-registry" class="screen active">
+    <div class="page-header">
+      <div><h2>Registry</h2><p>Link your gift registries so guests can find them on your wedding site.</p></div>
+      <button class="btn-primary">+ Add registry</button>
+    </div>
+    <div class="info-banner">Your registry links appear automatically on your wedding website. Guests can browse and purchase gifts without leaving your site.</div>
+    <div class="sl">Connected registries</div>
+    <div class="reg-url-row">
+      <div class="reg-url-logo" style="background:#EEEDFE;color:#3C3489;">Z</div>
+      <div><div class="reg-url-name">Zola</div><div class="reg-url-link">zola.com/registry/priya-arjun</div></div>
+      <div class="reg-url-actions"><button class="reg-url-btn">Edit</button><button class="reg-url-btn" style="color:#A32D2D;border-color:#A32D2D;">Remove</button></div>
+    </div>
+    <div class="reg-url-row">
+      <div class="reg-url-logo" style="background:#FAEEDA;color:#633806;">A</div>
+      <div><div class="reg-url-name">Amazon</div><div class="reg-url-link">amazon.com/wedding/registry/3BFKJS8</div></div>
+      <div class="reg-url-actions"><button class="reg-url-btn">Edit</button><button class="reg-url-btn" style="color:#A32D2D;border-color:#A32D2D;">Remove</button></div>
+    </div>
+    <div class="sl" style="margin-top:20px;">Add more registries</div>
+    <div class="registry-grid">
+      <div class="reg-card"><div class="reg-logo" style="background:#E6F1FB;color:#0C447C;">Crate & Barrel</div><div class="reg-name">Crate & Barrel</div><div class="reg-desc">Home & lifestyle gifts</div><span class="reg-status">+ Add link</span></div>
+      <div class="reg-card"><div class="reg-logo" style="background:#EAF3DE;color:#3B6D11;">Williams Sonoma</div><div class="reg-name">Williams Sonoma</div><div class="reg-desc">Kitchen & cookware</div><span class="reg-status">+ Add link</span></div>
+      <div class="reg-card"><div class="reg-logo" style="background:#FBEAF0;color:#72243E;">Custom</div><div class="reg-name">Custom link</div><div class="reg-desc">Honeymoon fund, charity, etc.</div><span class="reg-status">+ Add link</span></div>
+    </div>
+  </div>
+
+  <div id="tab-gallery" class="screen">
+    <div class="page-header">
+      <div><h2>Photo gallery</h2><p>Upload and organise photos from your wedding. Visible to guests on your site.</p></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-outline">Gallery settings</button>
+        <button class="btn-primary">Upload photos</button>
+      </div>
+    </div>
+    <div class="upload-zone">
+      <h3>Upload your wedding photos</h3>
+      <p>Drag and drop photos here, or click to browse. Organise them into albums by ceremony.</p>
+      <span>JPG, PNG, HEIC · Max 25MB per photo · Unlimited storage</span>
+    </div>
+    <div class="album-tabs">
+      <span class="album-tab active">All photos (48)</span>
+      <span class="album-tab">Mehndi (12)</span>
+      <span class="album-tab">Haldi (8)</span>
+      <span class="album-tab">Sangeet (14)</span>
+      <span class="album-tab">Wedding (10)</span>
+      <span class="album-tab">Reception (4)</span>
+      <span class="album-tab">+ New album</span>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-swatch" style="background:#FBEAF0;"></div>
+      <div class="photo-swatch" style="background:#F4C0D1;"></div>
+      <div class="photo-swatch" style="background:#FAEEDA;"></div>
+      <div class="photo-swatch" style="background:#FAC775;"></div>
+      <div class="photo-swatch" style="background:#E1F5EE;"></div>
+      <div class="photo-swatch" style="background:#9FE1CB;"></div>
+      <div class="photo-swatch" style="background:#EEEDFE;"></div>
+      <div class="photo-swatch" style="background:#CECBF6;"></div>
+      <div class="photo-swatch" style="background:#2C1A4E;"></div>
+      <div class="photo-swatch" style="background:#1A2E1A;"></div>
+      <div class="photo-swatch" style="background:#FBEAF0;"></div>
+      <div style="height:90px;border-radius:8px;border:1.5px dashed rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;color:#888;">+</span></div>
+    </div>
+    <div class="gallery-settings">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;">Gallery settings</div>
+      <div class="gs-row"><div><div class="gs-label">Visible to guests</div><div class="gs-sub">Guests can view your gallery on your wedding site</div></div><div class="toggle"></div></div>
+      <div class="gs-row"><div><div class="gs-label">Allow guest photo uploads</div><div class="gs-sub">Guests can submit their own photos to your gallery</div></div><div class="toggle"></div></div>
+      <div class="gs-row"><div><div class="gs-label">Password protect gallery</div><div class="gs-sub">Only guests with the password can view photos</div></div><div class="toggle off"></div></div>
+    </div>
+  </div>
+
+  <div id="tab-guestsee" class="screen">
+    <div style="background:#f5f4f0;border-radius:12px;padding:20px;display:flex;justify-content:center;">
+      <div style="width:340px;background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:16px;overflow:hidden;">
+        <div style="background:#2C1A4E;padding:16px;text-align:center;">
+          <div style="font-size:14px;color:#EDD9FF;font-weight:500;margin-bottom:3px;">Priya & Arjun</div>
+          <div style="font-size:11px;color:#C9A8F0;">November 14, 2025</div>
+        </div>
+        <div style="padding:14px 16px;border-bottom:0.5px solid rgba(0,0,0,0.08);">
+          <div style="font-size:10px;font-weight:500;color:#534AB7;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Gifts & registry</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:#f5f4f0;border-radius:8px;cursor:pointer;">
+              <div style="width:28px;height:28px;border-radius:6px;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#3C3489;flex-shrink:0;">Z</div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Zola registry</div><div style="font-size:11px;color:#888;">Home & lifestyle</div></div>
+              <span style="font-size:11px;color:#534AB7;">View →</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:#f5f4f0;border-radius:8px;cursor:pointer;">
+              <div style="width:28px;height:28px;border-radius:6px;background:#FAEEDA;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#633806;flex-shrink:0;">A</div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Amazon wishlist</div><div style="font-size:11px;color:#888;">Kitchen & home</div></div>
+              <span style="font-size:11px;color:#534AB7;">View →</span>
+            </div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;">
+          <div style="font-size:10px;font-weight:500;color:#534AB7;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Photo gallery</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:10px;">
+            <div style="height:72px;border-radius:6px;background:#FBEAF0;"></div>
+            <div style="height:72px;border-radius:6px;background:#E1F5EE;"></div>
+            <div style="height:72px;border-radius:6px;background:#EEEDFE;"></div>
+            <div style="height:72px;border-radius:6px;background:#FAEEDA;"></div>
+            <div style="height:72px;border-radius:6px;background:#2C1A4E;"></div>
+            <div style="height:72px;border-radius:6px;background:#F4C0D1;"></div>
+          </div>
+          <div style="text-align:center;font-size:12px;color:#534AB7;cursor:pointer;">View all 48 photos →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const tabs = ['registry','gallery','guestsee'];
+  const idx = tabs.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>

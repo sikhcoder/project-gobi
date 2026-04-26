@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget tracker — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 780px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .section-label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+    .stat-card { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .s-label { font-size: 11px; color: #888; margin-bottom: 5px; }
+    .s-val { font-size: 20px; font-weight: 500; margin-bottom: 2px; }
+    .s-sub { font-size: 11px; color: #888; }
+    .overall-bar-wrap { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px; margin-bottom: 24px; }
+    .ob-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+    .ob-top span { font-size: 14px; font-weight: 500; }
+    .ob-top a { font-size: 12px; color: #534AB7; cursor: pointer; }
+    .bar-track { height: 10px; background: rgba(0,0,0,0.08); border-radius: 5px; margin-bottom: 8px; overflow: hidden; display: flex; }
+    .bar-seg { height: 10px; }
+    .bar-legend { display: flex; gap: 14px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #888; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .cat-table { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+    .cat-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 80px; gap: 8px; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .cat-row:last-child { border-bottom: none; }
+    .cat-row.header { background: #f5f4f0; }
+    .cat-row.header span { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; }
+    .cat-name { display: flex; align-items: center; gap: 8px; }
+    .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .cat-label { font-size: 13px; font-weight: 500; }
+    .cat-sub { font-size: 11px; color: #888; }
+    .amt { font-size: 13px; font-weight: 500; }
+    .amt.muted { color: #888; font-weight: 400; }
+    .mini-bar-track { height: 4px; background: rgba(0,0,0,0.08); border-radius: 2px; }
+    .mini-bar { height: 4px; border-radius: 2px; }
+    .status-pill { font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 500; text-align: center; }
+    .paid { background: #EAF3DE; color: #3B6D11; }
+    .partial { background: #FAEEDA; color: #854F0B; }
+    .unpaid { background: #f5f4f0; color: #888; }
+    .add-row { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #534AB7; cursor: pointer; padding: 12px 16px; border-top: 0.5px solid rgba(0,0,0,0.08); }
+    .event-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .event-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; }
+    .ev-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .ev-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .ev-name { font-size: 14px; font-weight: 500; }
+    .ev-date { font-size: 11px; color: #888; margin-left: auto; }
+    .ev-amounts { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .ea-label { font-size: 11px; color: #888; margin-bottom: 2px; }
+    .ea-val { font-size: 15px; font-weight: 500; }
+    .ev-bar-track { height: 5px; background: rgba(0,0,0,0.08); border-radius: 3px; margin-bottom: 8px; }
+    .ev-bar { height: 5px; border-radius: 3px; }
+    .ev-line { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+    .payment-list { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+    .payment-row { display: grid; grid-template-columns: 1fr 80px 90px 80px; gap: 8px; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .payment-row:last-child { border-bottom: none; }
+    .payment-row.header { background: #f5f4f0; }
+    .payment-row.header span { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; }
+    .p-vendor { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .p-cat { font-size: 11px; color: #888; }
+    .p-amt { font-size: 13px; font-weight: 500; }
+    .p-due { font-size: 11px; color: #888; }
+    .due-soon { color: #854F0B; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Budget tracker — Indian wedding platform</h1>
+    <div class="tab-bar">
+      <div class="tab active" onclick="showTab('overview')">Overview</div>
+      <div class="tab" onclick="showTab('byevent')">By event</div>
+      <div class="tab" onclick="showTab('payments')">Payments</div>
+    </div>
+
+    <div id="tab-overview" class="screen active">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="s-label">Total budget</div><div class="s-val">$38,000</div><div class="s-sub">Set by you</div></div>
+        <div class="stat-card"><div class="s-label">Committed</div><div class="s-val">$26,400</div><div class="s-sub">Booked vendors</div></div>
+        <div class="stat-card"><div class="s-label">Paid so far</div><div class="s-val" style="color:#1D9E75;">$14,200</div><div class="s-sub">Deposits & invoices</div></div>
+        <div class="stat-card"><div class="s-label">Remaining</div><div class="s-val" style="color:#534AB7;">$11,600</div><div class="s-sub">Still unallocated</div></div>
+      </div>
+      <div class="overall-bar-wrap">
+        <div class="ob-top"><span>Budget breakdown</span><a>Edit budget</a></div>
+        <div class="bar-track">
+          <div class="bar-seg" style="background:#1D9E75;width:37%;"></div>
+          <div class="bar-seg" style="background:#534AB7;opacity:0.4;width:32%;"></div>
+          <div class="bar-seg" style="background:rgba(0,0,0,0.08);width:31%;"></div>
+        </div>
+        <div class="bar-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#1D9E75;"></div>Paid ($14,200)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#534AB7;opacity:0.5;"></div>Committed ($12,200)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(0,0,0,0.2);"></div>Unallocated ($11,600)</div>
+        </div>
+      </div>
+      <div class="section-label">By category</div>
+      <div class="cat-table">
+        <div class="cat-row header"><span>Category</span><span>Budget</span><span>Spent</span><span>Progress</span><span>Status</span></div>
+        <div class="cat-row">
+          <div class="cat-name"><div class="cat-dot" style="background:#534AB7;"></div><div><div class="cat-label">Photography & film</div><div class="cat-sub">Patel & Co.</div></div></div>
+          <div class="amt">$6,000</div><div class="amt">$6,000</div>
+          <div><div class="mini-bar-track"><div class="mini-bar" style="background:#534AB7;width:100%;"></div></div></div>
+          <div><span class="status-pill paid">Paid</span></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-name"><div class="cat-dot" style="background:#1D9E75;"></div><div><div class="cat-label">Catering</div><div class="cat-sub">Sharma Kitchen</div></div></div>
+          <div class="amt">$12,000</div><div class="amt">$4,200</div>
+          <div><div class="mini-bar-track"><div class="mini-bar" style="background:#1D9E75;width:35%;"></div></div></div>
+          <div><span class="status-pill partial">Deposit paid</span></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-name"><div class="cat-dot" style="background:#D4537E;"></div><div><div class="cat-label">Decor & florals</div><div class="cat-sub">Not booked yet</div></div></div>
+          <div class="amt">$5,000</div><div class="amt muted">—</div>
+          <div><div class="mini-bar-track"><div class="mini-bar" style="background:#D4537E;width:0%;"></div></div></div>
+          <div><span class="status-pill unpaid">Unbooked</span></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-name"><div class="cat-dot" style="background:#EF9F27;"></div><div><div class="cat-label">Hair & makeup</div><div class="cat-sub">Not booked yet</div></div></div>
+          <div class="amt">$3,000</div><div class="amt muted">—</div>
+          <div><div class="mini-bar-track"><div class="mini-bar" style="background:#EF9F27;width:0%;"></div></div></div>
+          <div><span class="status-pill unpaid">Unbooked</span></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-name"><div class="cat-dot" style="background:#D85A30;"></div><div><div class="cat-label">Mehndi artist</div><div class="cat-sub">Meena's Mehndi</div></div></div>
+          <div class="amt">$1,200</div><div class="amt">$800</div>
+          <div><div class="mini-bar-track"><div class="mini-bar" style="background:#D85A30;width:67%;"></div></div></div>
+          <div><span class="status-pill partial">Deposit paid</span></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-name"><div class="cat-dot" style="background:#0F6E56;"></div><div><div class="cat-label">Music & entertainment</div><div class="cat-sub">DJ Ravi</div></div></div>
+          <div class="amt">$3,500</div><div class="amt">$1,200</div>
+          <div><div class="mini-bar-track"><div class="mini-bar" style="background:#0F6E56;width:34%;"></div></div></div>
+          <div><span class="status-pill partial">Deposit paid</span></div>
+        </div>
+        <div class="add-row"><span style="font-size:16px;">+</span> Add category</div>
+      </div>
+    </div>
+
+    <div id="tab-byevent" class="screen">
+      <div class="section-label">Spend per ceremony</div>
+      <div class="event-grid">
+        <div class="event-card">
+          <div class="ev-header"><div class="ev-dot" style="background:#D4537E;"></div><span class="ev-name">Mehndi</span><span class="ev-date">Nov 12</span></div>
+          <div class="ev-amounts"><div><div class="ea-label">Budget</div><div class="ea-val">$3,200</div></div><div style="text-align:right;"><div class="ea-label">Spent</div><div class="ea-val" style="color:#1D9E75;">$2,000</div></div></div>
+          <div class="ev-bar-track"><div class="ev-bar" style="background:#D4537E;width:63%;"></div></div>
+          <div class="ev-line"><span>Mehndi · decor · catering</span><span>$1,200 left</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ev-header"><div class="ev-dot" style="background:#EF9F27;"></div><span class="ev-name">Haldi</span><span class="ev-date">Nov 13 AM</span></div>
+          <div class="ev-amounts"><div><div class="ea-label">Budget</div><div class="ea-val">$1,800</div></div><div style="text-align:right;"><div class="ea-label">Spent</div><div class="ea-val" style="color:#1D9E75;">$400</div></div></div>
+          <div class="ev-bar-track"><div class="ev-bar" style="background:#EF9F27;width:22%;"></div></div>
+          <div class="ev-line"><span>Decor · florals</span><span>$1,400 left</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ev-header"><div class="ev-dot" style="background:#1D9E75;"></div><span class="ev-name">Sangeet</span><span class="ev-date">Nov 13 PM</span></div>
+          <div class="ev-amounts"><div><div class="ea-label">Budget</div><div class="ea-val">$7,000</div></div><div style="text-align:right;"><div class="ea-label">Spent</div><div class="ea-val" style="color:#1D9E75;">$3,200</div></div></div>
+          <div class="ev-bar-track"><div class="ev-bar" style="background:#1D9E75;width:46%;"></div></div>
+          <div class="ev-line"><span>DJ · catering · decor</span><span>$3,800 left</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ev-header"><div class="ev-dot" style="background:#534AB7;"></div><span class="ev-name">Wedding</span><span class="ev-date">Nov 14 AM</span></div>
+          <div class="ev-amounts"><div><div class="ea-label">Budget</div><div class="ea-val">$14,000</div></div><div style="text-align:right;"><div class="ea-label">Spent</div><div class="ea-val" style="color:#1D9E75;">$6,400</div></div></div>
+          <div class="ev-bar-track"><div class="ev-bar" style="background:#534AB7;width:46%;"></div></div>
+          <div class="ev-line"><span>Photo · pandit · catering</span><span>$7,600 left</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ev-header"><div class="ev-dot" style="background:#D85A30;"></div><span class="ev-name">Reception</span><span class="ev-date">Nov 14 PM</span></div>
+          <div class="ev-amounts"><div><div class="ea-label">Budget</div><div class="ea-val">$12,000</div></div><div style="text-align:right;"><div class="ea-label">Spent</div><div class="ea-val" style="color:#1D9E75;">$2,200</div></div></div>
+          <div class="ev-bar-track"><div class="ev-bar" style="background:#D85A30;width:18%;"></div></div>
+          <div class="ev-line"><span>Catering · music · decor</span><span>$9,800 left</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-payments" class="screen">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div class="section-label" style="margin:0;">Upcoming payments</div>
+        <span style="font-size:12px;padding:4px 10px;border-radius:8px;background:#FAEEDA;color:#854F0B;font-weight:500;">3 due soon</span>
+      </div>
+      <div class="payment-list" style="margin-bottom:24px;">
+        <div class="payment-row header"><span>Vendor</span><span>Amount</span><span>Due date</span><span>Status</span></div>
+        <div class="payment-row">
+          <div><div class="p-vendor">Sharma Kitchen</div><div class="p-cat">Catering · final payment</div></div>
+          <div class="p-amt">$7,800</div><div class="p-due due-soon">Oct 14 · 30 days</div>
+          <div><span class="status-pill partial">Pending</span></div>
+        </div>
+        <div class="payment-row">
+          <div><div class="p-vendor">DJ Ravi</div><div class="p-cat">Music · final payment</div></div>
+          <div class="p-amt">$2,300</div><div class="p-due due-soon">Oct 28 · 44 days</div>
+          <div><span class="status-pill partial">Pending</span></div>
+        </div>
+        <div class="payment-row">
+          <div><div class="p-vendor">Meena's Mehndi</div><div class="p-cat">Mehndi · final payment</div></div>
+          <div class="p-amt">$400</div><div class="p-due due-soon">Nov 1 · 48 days</div>
+          <div><span class="status-pill partial">Pending</span></div>
+        </div>
+      </div>
+      <div class="section-label">Payment history</div>
+      <div class="payment-list">
+        <div class="payment-row header"><span>Vendor</span><span>Amount</span><span>Paid on</span><span>Status</span></div>
+        <div class="payment-row">
+          <div><div class="p-vendor">Patel & Co. Photography</div><div class="p-cat">Photography · full payment</div></div>
+          <div class="p-amt">$6,000</div><div class="p-due">Aug 3, 2025</div>
+          <div><span class="status-pill paid">Paid</span></div>
+        </div>
+        <div class="payment-row">
+          <div><div class="p-vendor">Sharma Kitchen</div><div class="p-cat">Catering · deposit</div></div>
+          <div class="p-amt">$4,200</div><div class="p-due">Jul 18, 2025</div>
+          <div><span class="status-pill paid">Paid</span></div>
+        </div>
+        <div class="payment-row">
+          <div><div class="p-vendor">DJ Ravi</div><div class="p-cat">Music · deposit</div></div>
+          <div class="p-amt">$1,200</div><div class="p-due">Jul 22, 2025</div>
+          <div><span class="status-pill paid">Paid</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      const tabs = ['overview','byevent','payments'];
+      const idx = tabs.indexOf(id);
+      if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+    }
+  </script>
+</body>
+</html>

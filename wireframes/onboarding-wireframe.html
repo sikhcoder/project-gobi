@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding wireframe — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 520px; margin: 0 auto; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px; text-align: center; }
+    .screen-section { margin-bottom: 32px; }
+    .screen-section-label { font-size: 13px; font-weight: 500; color: #888; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+    .ob-shell { background: #e8e6e0; border-radius: 16px; padding: 16px; }
+    .ob-screen { background: #fff; border-radius: 12px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px 24px 24px; }
+    .ob-step-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 24px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.15); }
+    .dot.active { background: #7F77DD; width: 22px; border-radius: 4px; }
+    .ob-label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .ob-heading { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+    .ob-sub { font-size: 13px; color: #888; margin-bottom: 24px; }
+    .ob-field { margin-bottom: 16px; }
+    .ob-field label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; }
+    .ob-field input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f5f4f0; color: #1a1a18; font-size: 14px; font-family: inherit; }
+    .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .ob-btn { width: 100%; padding: 11px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+    .ob-btn-ghost { width: 100%; padding: 11px; border-radius: 8px; background: transparent; color: #534AB7; border: 1.5px solid #534AB7; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+    .tradition-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .trad-pill { padding: 7px 14px; border-radius: 20px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 13px; color: #888; cursor: pointer; background: #fff; }
+    .trad-pill.selected { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; font-weight: 500; }
+    .ceremony-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .ceremony-card { border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; padding: 14px 12px; cursor: pointer; background: #fff; }
+    .ceremony-card.selected { border: 1.5px solid #7F77DD; background: #EEEDFE; }
+    .ceremony-card .c-icon { width: 28px; height: 28px; border-radius: 6px; margin-bottom: 8px; }
+    .ceremony-card .c-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .ceremony-card.selected .c-name { color: #3C3489; }
+    .ceremony-card .c-sub { font-size: 11px; color: #888; }
+    .ceremony-card.selected .c-sub { color: #534AB7; }
+    .template-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .tmpl-card { border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; overflow: hidden; cursor: pointer; }
+    .tmpl-card.selected { border: 2px solid #7F77DD; }
+    .tmpl-preview { height: 72px; display: flex; align-items: center; justify-content: center; }
+    .tmpl-label { padding: 8px 10px; font-size: 12px; font-weight: 500; border-top: 0.5px solid rgba(0,0,0,0.08); background: #fff; }
+    .url-box { background: #f5f4f0; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.12); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .url-text { font-size: 13px; color: #888; flex: 1; }
+    .url-text span { color: #534AB7; font-weight: 500; }
+    .copy-btn { font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 0.5px solid #7F77DD; color: #534AB7; background: transparent; cursor: pointer; }
+    .summary-box { border: 0.5px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 14px; margin-bottom: 20px; }
+    .summary-item { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 8px; }
+    .summary-item:last-child { margin-bottom: 0; }
+    .green-dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Onboarding wireframe — Indian wedding platform</h1>
+
+    <div class="screen-section">
+      <div class="screen-section-label">Step 1 — The basics</div>
+      <div class="ob-shell">
+        <div class="ob-screen">
+          <div class="ob-step-dots">
+            <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+          <p class="ob-label">Welcome</p>
+          <h2 class="ob-heading">Let's start with you two</h2>
+          <p class="ob-sub">This takes about 2 minutes.</p>
+          <div class="ob-row">
+            <div class="ob-field"><label>Partner 1 name</label><input value="Priya" readonly/></div>
+            <div class="ob-field"><label>Partner 2 name</label><input value="Arjun" readonly/></div>
+          </div>
+          <div class="ob-row">
+            <div class="ob-field"><label>Wedding date</label><input value="Nov 14, 2025" readonly/></div>
+            <div class="ob-field"><label>City</label><input value="Chicago, IL" readonly/></div>
+          </div>
+          <div class="ob-field">
+            <label>Tradition</label>
+            <div class="tradition-row">
+              <span class="trad-pill selected">Hindu</span>
+              <span class="trad-pill">Muslim</span>
+              <span class="trad-pill">Sikh</span>
+              <span class="trad-pill">Christian</span>
+              <span class="trad-pill">Jain</span>
+            </div>
+          </div>
+          <button class="ob-btn">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-section">
+      <div class="screen-section-label">Step 2 — Select your ceremonies</div>
+      <div class="ob-shell">
+        <div class="ob-screen">
+          <div class="ob-step-dots">
+            <div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+          <p class="ob-label">Your events</p>
+          <h2 class="ob-heading">Which ceremonies are you having?</h2>
+          <p class="ob-sub">Select all that apply. You can add more later.</p>
+          <div class="ceremony-grid">
+            <div class="ceremony-card selected">
+              <div class="c-icon" style="background:#FBEAF0;"></div>
+              <p class="c-name">Mehndi</p><p class="c-sub">Night of henna</p>
+            </div>
+            <div class="ceremony-card selected">
+              <div class="c-icon" style="background:#FAEEDA;"></div>
+              <p class="c-name">Haldi</p><p class="c-sub">Turmeric ritual</p>
+            </div>
+            <div class="ceremony-card selected">
+              <div class="c-icon" style="background:#E1F5EE;"></div>
+              <p class="c-name">Sangeet</p><p class="c-sub">Music & dance night</p>
+            </div>
+            <div class="ceremony-card">
+              <div class="c-icon" style="background:#f5f4f0;"></div>
+              <p class="c-name">Baraat</p><p class="c-sub">Groom's procession</p>
+            </div>
+            <div class="ceremony-card selected">
+              <div class="c-icon" style="background:#EEEDFE;"></div>
+              <p class="c-name">Wedding</p><p class="c-sub">Main ceremony</p>
+            </div>
+            <div class="ceremony-card selected">
+              <div class="c-icon" style="background:#E6F1FB;"></div>
+              <p class="c-name">Reception</p><p class="c-sub">Celebration dinner</p>
+            </div>
+          </div>
+          <button class="ob-btn-ghost" style="margin-bottom:8px;">+ Add custom ceremony</button>
+          <button class="ob-btn">Continue with 5 events</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-section">
+      <div class="screen-section-label">Step 3 — Pick your template</div>
+      <div class="ob-shell">
+        <div class="ob-screen">
+          <div class="ob-step-dots">
+            <div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+          </div>
+          <p class="ob-label">Your wedding site</p>
+          <h2 class="ob-heading">Choose a vibe</h2>
+          <p class="ob-sub">You can always change this later.</p>
+          <div class="template-row">
+            <div class="tmpl-card selected">
+              <div class="tmpl-preview" style="background:#2C1A4E;">
+                <div style="text-align:center;">
+                  <div style="font-size:11px;color:#EDD9FF;font-weight:500;letter-spacing:0.1em;">PRIYA & ARJUN</div>
+                  <div style="font-size:9px;color:#C9A8F0;margin-top:3px;">NOV 14, 2025</div>
+                </div>
+              </div>
+              <div class="tmpl-label">Mughal</div>
+            </div>
+            <div class="tmpl-card">
+              <div class="tmpl-preview" style="background:#1A2E1A;">
+                <div style="text-align:center;">
+                  <div style="font-size:11px;color:#D4EDCA;font-weight:500;letter-spacing:0.08em;">Priya & Arjun</div>
+                  <div style="font-size:9px;color:#9FC98F;margin-top:3px;">November 14, 2025</div>
+                </div>
+              </div>
+              <div class="tmpl-label">Dravidian</div>
+            </div>
+            <div class="tmpl-card">
+              <div class="tmpl-preview" style="background:#F5F0EB;">
+                <div style="text-align:center;">
+                  <div style="font-size:11px;color:#2C2C2A;font-weight:400;letter-spacing:0.04em;">Priya & Arjun</div>
+                  <div style="font-size:9px;color:#888;margin-top:3px;">14 · 11 · 2025</div>
+                </div>
+              </div>
+              <div class="tmpl-label">Minimalist</div>
+            </div>
+            <div class="tmpl-card">
+              <div class="tmpl-preview" style="background:#7B1F3A;">
+                <div style="text-align:center;">
+                  <div style="font-size:11px;color:#FFD97A;font-weight:500;letter-spacing:0.06em;">Priya & Arjun</div>
+                  <div style="font-size:9px;color:#F4A0B0;margin-top:3px;">Nov 14, 2025</div>
+                </div>
+              </div>
+              <div class="tmpl-label">Vibrant</div>
+            </div>
+          </div>
+          <button class="ob-btn">Continue with Mughal</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-section">
+      <div class="screen-section-label">Step 4 — Your wedding URL</div>
+      <div class="ob-shell">
+        <div class="ob-screen">
+          <div class="ob-step-dots">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+          </div>
+          <p class="ob-label">You're all set</p>
+          <h2 class="ob-heading">Your wedding site is live</h2>
+          <p class="ob-sub">Share it with family, send it to guests, make it yours.</p>
+          <div class="url-box">
+            <div class="url-text">shaadi.com/<span>priya-arjun</span></div>
+            <button class="copy-btn">Copy</button>
+          </div>
+          <div class="summary-box">
+            <div style="font-size:12px;color:#888;margin-bottom:10px;">Your site includes</div>
+            <div class="summary-item"><div class="green-dot"></div>5 event pages (Mehndi, Haldi, Sangeet, Wedding, Reception)</div>
+            <div class="summary-item"><div class="green-dot"></div>RSVP for each ceremony</div>
+            <div class="summary-item"><div class="green-dot"></div>Guest dashboard</div>
+          </div>
+          <button class="ob-btn">Go to my dashboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

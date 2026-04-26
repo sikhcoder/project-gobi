@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day-of timeline — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .sl { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .page-header h2 { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+    .page-header p { font-size: 13px; color: #888; }
+    .btn-primary { padding: 7px 14px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 12px; font-weight: 500; cursor: pointer; }
+    .btn-outline { padding: 7px 14px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; background: transparent; cursor: pointer; }
+    .day-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .day-tab { padding: 10px 16px; border-radius: 10px; border: 0.5px solid rgba(0,0,0,0.12); cursor: pointer; text-align: center; }
+    .day-tab.active { background: #534AB7; border-color: #534AB7; }
+    .day-tab-date { font-size: 11px; margin-bottom: 2px; }
+    .day-tab.active .day-tab-date { color: rgba(255,255,255,0.7); }
+    .day-tab:not(.active) .day-tab-date { color: #888; }
+    .day-tab-name { font-size: 13px; font-weight: 500; }
+    .day-tab.active .day-tab-name { color: #fff; }
+    .day-tab-events { font-size: 10px; margin-top: 2px; }
+    .day-tab.active .day-tab-events { color: rgba(255,255,255,0.6); }
+    .day-tab:not(.active) .day-tab-events { color: #888; }
+    .ev-band { border-left: 4px solid; border-radius: 0 12px 12px 0; padding: 14px 16px; margin-bottom: 10px; }
+    .ev-band-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .ev-band-meta { font-size: 12px; margin-bottom: 8px; }
+    .ev-band-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ev-tag { font-size: 10px; padding: 2px 8px; border-radius: 6px; }
+    .tl-wrap { display: grid; grid-template-columns: 64px 1fr; gap: 0; }
+    .tl-times { display: flex; flex-direction: column; }
+    .tl-hour { height: 56px; display: flex; align-items: flex-start; padding-top: 4px; }
+    .tl-hour span { font-size: 11px; color: #888; white-space: nowrap; }
+    .tl-events-col { position: relative; border-left: 0.5px solid rgba(0,0,0,0.1); padding-left: 12px; }
+    .tl-hour-line { height: 56px; border-top: 0.5px solid rgba(0,0,0,0.06); }
+    .tl-block { border-radius: 8px; padding: 8px 10px; margin-bottom: 2px; margin-right: 8px; cursor: pointer; }
+    .tl-block-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .tl-block-detail { font-size: 11px; line-height: 1.4; }
+    .tl-block-tags { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+    .tl-tag { font-size: 10px; padding: 1px 6px; border-radius: 6px; }
+    .call-sheet { border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+    .cs-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 10px 16px; background: #f5f4f0; }
+    .cs-header span { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; }
+    .cs-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 12px 16px; border-top: 0.5px solid rgba(0,0,0,0.08); align-items: center; }
+    .cs-vendor { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .cs-cat { font-size: 11px; color: #888; }
+    .cs-time { font-size: 13px; font-weight: 500; }
+    .cs-contact { font-size: 12px; color: #888; }
+    .cs-event-tag { font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; display: inline-block; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Day-of timeline — Indian wedding platform</h1>
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('weekend')">Weekend overview</div>
+    <div class="tab" onclick="showTab('sangeet')">Sangeet timeline</div>
+    <div class="tab" onclick="showTab('callsheet')">Vendor call sheet</div>
+  </div>
+
+  <div id="tab-weekend" class="screen active">
+    <div class="page-header">
+      <div><h2>Wedding weekend timeline</h2><p>Nov 12–14, 2025 · 5 events · Chicago</p></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-outline">Share with vendors</button>
+        <button class="btn-primary">Export PDF</button>
+      </div>
+    </div>
+    <div class="day-tabs">
+      <div class="day-tab"><div class="day-tab-date">Wed Nov 12</div><div class="day-tab-name">Mehndi day</div><div class="day-tab-events">1 event</div></div>
+      <div class="day-tab active"><div class="day-tab-date">Thu Nov 13</div><div class="day-tab-name">Sangeet day</div><div class="day-tab-events">2 events</div></div>
+      <div class="day-tab"><div class="day-tab-date">Fri Nov 14</div><div class="day-tab-name">Wedding day</div><div class="day-tab-events">2 events</div></div>
+    </div>
+    <div class="ev-band" style="border-color:#EF9F27;background:#FAEEDA;">
+      <div class="ev-band-title" style="color:#633806;">Haldi · 10:00 AM – 1:00 PM</div>
+      <div class="ev-band-meta" style="color:#854F0B;">Priya's family home · 80 guests · Family only</div>
+      <div class="ev-band-tags">
+        <span class="ev-tag" style="background:#FAC775;color:#412402;">Photographer arrives 9:30 AM</span>
+        <span class="ev-tag" style="background:#f5f4f0;color:#888;">No DJ · Dhol player only</span>
+      </div>
+    </div>
+    <div class="ev-band" style="border-color:#1D9E75;background:#E1F5EE;">
+      <div class="ev-band-title" style="color:#085041;">Sangeet · 7:00 PM – 11:30 PM</div>
+      <div class="ev-band-meta" style="color:#0F6E56;">The Grand Ballroom, Chicago · 240 guests</div>
+      <div class="ev-band-tags">
+        <span class="ev-tag" style="background:#9FE1CB;color:#085041;">Vendors arrive 4:00 PM</span>
+        <span class="ev-tag" style="background:#9FE1CB;color:#085041;">Dinner at 9:00 PM</span>
+        <span class="ev-tag" style="background:#f5f4f0;color:#888;">Performances 8:00–9:00 PM</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-sangeet" class="screen">
+    <div class="page-header">
+      <div><h2>Sangeet · Nov 13</h2><p>The Grand Ballroom · 7:00 PM – 11:30 PM · 240 guests</p></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-outline">Add item</button>
+        <button class="btn-primary">Export PDF</button>
+      </div>
+    </div>
+    <div class="tl-wrap">
+      <div class="tl-times">
+        <div class="tl-hour"><span>4:00 PM</span></div>
+        <div class="tl-hour"><span>5:00 PM</span></div>
+        <div class="tl-hour"><span>6:00 PM</span></div>
+        <div class="tl-hour"><span>7:00 PM</span></div>
+        <div class="tl-hour"><span>8:00 PM</span></div>
+        <div class="tl-hour"><span>9:00 PM</span></div>
+        <div class="tl-hour"><span>10:00 PM</span></div>
+        <div class="tl-hour"><span>11:00 PM</span></div>
+      </div>
+      <div class="tl-events-col">
+        <div class="tl-hour-line">
+          <div class="tl-block" style="background:#E1F5EE;margin-top:4px;">
+            <div class="tl-block-name" style="color:#085041;">Vendor setup — DJ, catering, decor</div>
+            <div class="tl-block-detail" style="color:#0F6E56;">All vendors arrive and set up. Venue opens to vendors only.</div>
+            <div class="tl-block-tags"><span class="tl-tag" style="background:#9FE1CB;color:#085041;">DJ Ravi</span><span class="tl-tag" style="background:#9FE1CB;color:#085041;">Sharma Kitchen</span></div>
+          </div>
+        </div>
+        <div class="tl-hour-line"></div>
+        <div class="tl-hour-line">
+          <div class="tl-block" style="background:#EEEDFE;margin-top:4px;">
+            <div class="tl-block-name" style="color:#26215C;">Photography setup & family photos</div>
+            <div class="tl-block-detail" style="color:#534AB7;">Patel & Co. set up equipment. Immediate family portraits 6:15 PM.</div>
+            <div class="tl-block-tags"><span class="tl-tag" style="background:#CECBF6;color:#26215C;">Patel & Co.</span><span class="tl-tag" style="background:#CECBF6;color:#26215C;">Family only</span></div>
+          </div>
+        </div>
+        <div class="tl-hour-line">
+          <div class="tl-block" style="background:#E1F5EE;margin-top:4px;">
+            <div class="tl-block-name" style="color:#085041;">Doors open — guests arrive</div>
+            <div class="tl-block-detail" style="color:#0F6E56;">Welcome drinks and appetisers. DJ plays background music. Couple arrives 7:30 PM.</div>
+            <div class="tl-block-tags"><span class="tl-tag" style="background:#9FE1CB;color:#085041;">All 240 guests</span><span class="tl-tag" style="background:#9FE1CB;color:#085041;">DJ Ravi</span></div>
+          </div>
+        </div>
+        <div class="tl-hour-line">
+          <div class="tl-block" style="background:#FBEAF0;margin-top:4px;">
+            <div class="tl-block-name" style="color:#4B1528;">Dance performances</div>
+            <div class="tl-block-detail" style="color:#72243E;">Bride's side first, then groom's side. 6 groups total. MC to introduce each act.</div>
+            <div class="tl-block-tags"><span class="tl-tag" style="background:#F4C0D1;color:#4B1528;">Family & friends</span><span class="tl-tag" style="background:#F4C0D1;color:#4B1528;">Patel & Co.</span></div>
+          </div>
+        </div>
+        <div class="tl-hour-line">
+          <div class="tl-block" style="background:#FAEEDA;margin-top:4px;">
+            <div class="tl-block-name" style="color:#412402;">Dinner served</div>
+            <div class="tl-block-detail" style="color:#633806;">Buffet opens at 9:00 PM. Catering team manages 4 food stations.</div>
+            <div class="tl-block-tags"><span class="tl-tag" style="background:#FAC775;color:#412402;">Sharma Kitchen</span></div>
+          </div>
+        </div>
+        <div class="tl-hour-line">
+          <div class="tl-block" style="background:#E1F5EE;margin-top:4px;">
+            <div class="tl-block-name" style="color:#085041;">Open dance floor</div>
+            <div class="tl-block-detail" style="color:#0F6E56;">DJ transitions to Bollywood & Bhangra. Full lighting show.</div>
+            <div class="tl-block-tags"><span class="tl-tag" style="background:#9FE1CB;color:#085041;">DJ Ravi</span></div>
+          </div>
+        </div>
+        <div class="tl-hour-line"></div>
+        <div class="tl-hour-line">
+          <div class="tl-block" style="background:#f5f4f0;margin-top:4px;">
+            <div class="tl-block-name">Event ends · vendor pack down</div>
+            <div class="tl-block-detail" style="color:#888;">Venue must be cleared by 12:30 AM. All vendor equipment out by midnight.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-callsheet" class="screen">
+    <div class="page-header">
+      <div><h2>Vendor call sheet</h2><p>All vendors across the wedding weekend — arrival times and contacts</p></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-outline">Share with family</button>
+        <button class="btn-primary">Export PDF</button>
+      </div>
+    </div>
+    <div class="sl">Thursday Nov 13</div>
+    <div class="call-sheet" style="margin-bottom:20px;">
+      <div class="cs-header"><span>Vendor</span><span>Arrive</span><span>Contact</span><span>Event</span></div>
+      <div class="cs-row"><div><div class="cs-vendor">DJ Ravi</div><div class="cs-cat">Music & entertainment</div></div><div class="cs-time">4:00 PM</div><div class="cs-contact">+1 312 555 0144</div><div><span class="cs-event-tag" style="background:#E1F5EE;color:#085041;">Sangeet</span></div></div>
+      <div class="cs-row"><div><div class="cs-vendor">Sharma Kitchen</div><div class="cs-cat">Catering</div></div><div class="cs-time">4:30 PM</div><div class="cs-contact">+1 312 555 0188</div><div><span class="cs-event-tag" style="background:#E1F5EE;color:#085041;">Sangeet</span></div></div>
+      <div class="cs-row"><div><div class="cs-vendor">Patel & Co. Photography</div><div class="cs-cat">Photography & film</div></div><div class="cs-time">6:00 PM</div><div class="cs-contact">+1 312 555 0122</div><div><span class="cs-event-tag" style="background:#E1F5EE;color:#085041;">Sangeet</span></div></div>
+    </div>
+    <div class="sl">Friday Nov 14</div>
+    <div class="call-sheet">
+      <div class="cs-header"><span>Vendor</span><span>Arrive</span><span>Contact</span><span>Event</span></div>
+      <div class="cs-row"><div><div class="cs-vendor">Hair & Makeup Artist</div><div class="cs-cat">Bridal prep</div></div><div class="cs-time">6:00 AM</div><div class="cs-contact">TBC</div><div><span class="cs-event-tag" style="background:#EEEDFE;color:#26215C;">Wedding</span></div></div>
+      <div class="cs-row"><div><div class="cs-vendor">Patel & Co. Photography</div><div class="cs-cat">Photography & film</div></div><div class="cs-time">7:00 AM</div><div class="cs-contact">+1 312 555 0122</div><div><span class="cs-event-tag" style="background:#EEEDFE;color:#26215C;">Wedding</span></div></div>
+      <div class="cs-row"><div><div class="cs-vendor">Pandit / Officiant</div><div class="cs-cat">Ceremony</div></div><div class="cs-time">10:00 AM</div><div class="cs-contact">TBC</div><div><span class="cs-event-tag" style="background:#EEEDFE;color:#26215C;">Wedding</span></div></div>
+      <div class="cs-row"><div><div class="cs-vendor">Sharma Kitchen</div><div class="cs-cat">Catering</div></div><div class="cs-time">4:00 PM</div><div class="cs-contact">+1 312 555 0188</div><div><span class="cs-event-tag" style="background:#FAECE7;color:#712B13;">Reception</span></div></div>
+      <div class="cs-row"><div><div class="cs-vendor">DJ Ravi</div><div class="cs-cat">Music & entertainment</div></div><div class="cs-time">5:00 PM</div><div class="cs-contact">+1 312 555 0144</div><div><span class="cs-event-tag" style="background:#FAECE7;color:#712B13;">Reception</span></div></div>
+    </div>
+  </div>
+</div>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const tabs = ['weekend','sangeet','callsheet'];
+  const idx = tabs.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>

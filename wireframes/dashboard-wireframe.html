@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 780px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    .db-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .db-header h1 { font-size: 20px; font-weight: 500; margin-bottom: 3px; }
+    .db-header p { font-size: 13px; color: #888; }
+    .header-btns { display: flex; gap: 8px; }
+    .pill-btn { padding: 7px 14px; border-radius: 20px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 13px; color: #888; background: #fff; cursor: pointer; }
+    .pill-btn.primary { background: #534AB7; color: #fff; border-color: #534AB7; }
+    .nav-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .nav-item { font-size: 13px; padding: 8px 14px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .nav-item.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+    .stat-card { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .stat-card .s-label { font-size: 11px; color: #888; margin-bottom: 6px; }
+    .stat-card .s-val { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+    .stat-card .s-sub { font-size: 11px; color: #888; }
+    .section-label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 28px; }
+    .event-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; cursor: pointer; }
+    .ev-dot { width: 8px; height: 8px; border-radius: 50%; margin-bottom: 10px; }
+    .ev-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+    .ev-date { font-size: 12px; color: #888; margin-bottom: 12px; }
+    .ev-bar-bg { height: 3px; background: rgba(0,0,0,0.08); border-radius: 2px; margin-bottom: 6px; }
+    .ev-bar { height: 3px; border-radius: 2px; }
+    .ev-rsvp { font-size: 11px; color: #888; }
+    .add-card { border: 0.5px dashed rgba(0,0,0,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100px; cursor: pointer; border-radius: 12px; padding: 16px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .panel { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .panel-header span { font-size: 14px; font-weight: 500; }
+    .panel-header a { font-size: 12px; color: #534AB7; cursor: pointer; }
+    .vendor-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .vendor-row:last-child { border-bottom: none; }
+    .v-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+    .v-name { font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+    .v-cat { font-size: 11px; color: #888; }
+    .v-status { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+    .confirmed { background: #EAF3DE; color: #3B6D11; }
+    .pending { background: #FAEEDA; color: #854F0B; }
+    .task-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .task-row:last-child { border-bottom: none; }
+    .task-check { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.2); margin-top: 1px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .task-check.done { background: #1D9E75; border-color: #1D9E75; }
+    .task-check.done::after { content: ''; display: block; width: 8px; height: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+    .t-name { font-size: 13px; margin-bottom: 1px; }
+    .t-name.done { color: #888; text-decoration: line-through; }
+    .t-due { font-size: 11px; color: #888; }
+    .budget-bar-bg { height: 6px; background: rgba(0,0,0,0.08); border-radius: 3px; margin: 10px 0 6px; }
+    .budget-bar { height: 6px; border-radius: 3px; background: #534AB7; width: 38%; }
+    .budget-labels { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+    .site-preview { background: #f5f4f0; border-radius: 10px; padding: 12px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .site-dot { width: 8px; height: 8px; border-radius: 50%; background: #1D9E75; }
+    .site-url { font-size: 13px; color: #534AB7; flex: 1; }
+    .share-btn { font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 0.5px solid #7F77DD; color: #534AB7; background: transparent; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="db-header">
+      <div>
+        <h1>Priya & Arjun</h1>
+        <p>Nov 14, 2025 · Chicago, IL · 5 events</p>
+      </div>
+      <div class="header-btns">
+        <button class="pill-btn">Edit site</button>
+        <button class="pill-btn primary">Send RSVPs</button>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-item active">Overview</div>
+      <div class="nav-item">Guests</div>
+      <div class="nav-item">Vendors</div>
+      <div class="nav-item">Budget</div>
+      <div class="nav-item">Your site</div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="s-label">Days to wedding</div>
+        <div class="s-val" style="color:#534AB7;">234</div>
+        <div class="s-sub">Nov 14, 2025</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Guests invited</div>
+        <div class="s-val">312</div>
+        <div class="s-sub">RSVPs sent</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">RSVPs received</div>
+        <div class="s-val">187</div>
+        <div class="s-sub">60% responded</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Vendors booked</div>
+        <div class="s-val">4 / 9</div>
+        <div class="s-sub">5 remaining</div>
+      </div>
+    </div>
+
+    <div class="section-label">Your events</div>
+    <div class="events-grid">
+      <div class="event-card">
+        <div class="ev-dot" style="background:#D4537E;"></div>
+        <div class="ev-name">Mehndi</div>
+        <div class="ev-date">Nov 12 · 6:00 PM</div>
+        <div class="ev-bar-bg"><div class="ev-bar" style="background:#D4537E;width:72%;"></div></div>
+        <div class="ev-rsvp">89 of 124 confirmed</div>
+      </div>
+      <div class="event-card">
+        <div class="ev-dot" style="background:#EF9F27;"></div>
+        <div class="ev-name">Haldi</div>
+        <div class="ev-date">Nov 13 · 10:00 AM</div>
+        <div class="ev-bar-bg"><div class="ev-bar" style="background:#EF9F27;width:55%;"></div></div>
+        <div class="ev-rsvp">44 of 80 confirmed</div>
+      </div>
+      <div class="event-card">
+        <div class="ev-dot" style="background:#1D9E75;"></div>
+        <div class="ev-name">Sangeet</div>
+        <div class="ev-date">Nov 13 · 7:00 PM</div>
+        <div class="ev-bar-bg"><div class="ev-bar" style="background:#1D9E75;width:63%;"></div></div>
+        <div class="ev-rsvp">152 of 240 confirmed</div>
+      </div>
+      <div class="event-card">
+        <div class="ev-dot" style="background:#534AB7;"></div>
+        <div class="ev-name">Wedding</div>
+        <div class="ev-date">Nov 14 · 11:00 AM</div>
+        <div class="ev-bar-bg"><div class="ev-bar" style="background:#534AB7;width:48%;"></div></div>
+        <div class="ev-rsvp">150 of 312 confirmed</div>
+      </div>
+      <div class="event-card">
+        <div class="ev-dot" style="background:#D85A30;"></div>
+        <div class="ev-name">Reception</div>
+        <div class="ev-date">Nov 14 · 7:00 PM</div>
+        <div class="ev-bar-bg"><div class="ev-bar" style="background:#D85A30;width:41%;"></div></div>
+        <div class="ev-rsvp">128 of 312 confirmed</div>
+      </div>
+      <div class="add-card">
+        <div style="width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;color:#888;margin-bottom:8px;">+</div>
+        <div style="font-size:13px;color:#888;">Add ceremony</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header"><span>Vendors</span><a>View all →</a></div>
+        <div class="vendor-row">
+          <div class="v-avatar" style="background:#EEEDFE;color:#3C3489;">PH</div>
+          <div style="flex:1;"><div class="v-name">Patel & Co. Photography</div><div class="v-cat">Photography & Film</div></div>
+          <span class="v-status confirmed">Confirmed</span>
+        </div>
+        <div class="vendor-row">
+          <div class="v-avatar" style="background:#E1F5EE;color:#085041;">SK</div>
+          <div style="flex:1;"><div class="v-name">Sharma Kitchen</div><div class="v-cat">Catering</div></div>
+          <span class="v-status confirmed">Confirmed</span>
+        </div>
+        <div class="vendor-row">
+          <div class="v-avatar" style="background:#FAEEDA;color:#633806;">DJ</div>
+          <div style="flex:1;"><div class="v-name">DJ Ravi</div><div class="v-cat">Music & Entertainment</div></div>
+          <span class="v-status pending">Pending</span>
+        </div>
+        <div class="vendor-row">
+          <div class="v-avatar" style="background:#FBEAF0;color:#72243E;">MH</div>
+          <div style="flex:1;"><div class="v-name">Meena's Mehndi</div><div class="v-cat">Mehndi Artist</div></div>
+          <span class="v-status pending">Pending</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span>Checklist</span><a>View all →</a></div>
+        <div class="task-row">
+          <div class="task-check done"></div>
+          <div><div class="t-name done">Send save the dates</div><div class="t-due">Done</div></div>
+        </div>
+        <div class="task-row">
+          <div class="task-check done"></div>
+          <div><div class="t-name done">Book wedding venue</div><div class="t-due">Done</div></div>
+        </div>
+        <div class="task-row">
+          <div class="task-check"></div>
+          <div><div class="t-name">Book hair & makeup artist</div><div class="t-due">Due in 3 weeks</div></div>
+        </div>
+        <div class="task-row">
+          <div class="task-check"></div>
+          <div><div class="t-name">Finalise catering menu</div><div class="t-due">Due in 6 weeks</div></div>
+        </div>
+        <div class="task-row">
+          <div class="task-check"></div>
+          <div><div class="t-name">Order wedding invitations</div><div class="t-due">Due in 2 weeks</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header"><span>Budget</span><a>View all →</a></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+          <span style="color:#888;">Spent so far</span><span style="font-weight:500;">$14,200</span>
+        </div>
+        <div class="budget-bar-bg"><div class="budget-bar"></div></div>
+        <div class="budget-labels"><span>$0</span><span>Total: $38,000</span></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span>Your wedding site</span><a>Edit →</a></div>
+        <div class="site-preview">
+          <div class="site-dot"></div>
+          <span class="site-url">shaadi.com/priya-arjun</span>
+          <button class="share-btn">Share</button>
+        </div>
+        <div style="font-size:12px;color:#888;display:flex;gap:16px;">
+          <span>312 guests invited</span><span>5 events listed</span><span>Mughal theme</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

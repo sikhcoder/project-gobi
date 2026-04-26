@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor marketplace — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .search-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+    .search-input { flex: 1; padding: 9px 14px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f5f4f0; color: #1a1a18; font-size: 14px; }
+    .filter-btn { padding: 9px 14px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #fff; font-size: 13px; color: #888; cursor: pointer; }
+    .filter-btn.active { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; font-weight: 500; }
+
+    .cat-scroll { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .cat-pill { padding: 7px 14px; border-radius: 20px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; cursor: pointer; background: #fff; white-space: nowrap; }
+    .cat-pill.active { background: #534AB7; border-color: #534AB7; color: #fff; font-weight: 500; }
+
+    .results-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .results-bar p { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; }
+    .badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 500; }
+    .badge-green { background: #EAF3DE; color: #3B6D11; }
+    .badge-purple { background: #EEEDFE; color: #3C3489; }
+
+    .vendor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+    .vcard { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+    .vcard:hover { border-color: rgba(0,0,0,0.2); }
+    .vcard-img { height: 110px; display: flex; align-items: center; justify-content: center; }
+    .vcard-body { padding: 12px; }
+    .vcard-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+    .vcard-name { font-size: 14px; font-weight: 500; }
+    .save-btn { width: 24px; height: 24px; border-radius: 6px; border: 0.5px solid rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; cursor: pointer; background: #fff; font-size: 13px; color: #888; }
+    .vcard-cat { font-size: 11px; color: #888; margin-bottom: 8px; }
+    .vcard-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .star { color: #EF9F27; font-size: 12px; }
+    .vcard-rating { font-size: 12px; font-weight: 500; }
+    .vcard-reviews { font-size: 11px; color: #888; }
+    .verified-badge { font-size: 10px; padding: 2px 7px; border-radius: 8px; background: #EAF3DE; color: #3B6D11; font-weight: 500; margin-left: auto; }
+    .vcard-price { font-size: 12px; color: #888; }
+    .vcard-price span { color: #1a1a18; font-weight: 500; }
+    .vcard-loc { font-size: 11px; color: #888; margin-top: 4px; }
+
+    .profile-back { font-size: 13px; color: #534AB7; cursor: pointer; margin-bottom: 16px; display: inline-block; background: none; border: none; font-family: inherit; }
+    .profile-hero { height: 140px; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; }
+    .profile-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 12px; }
+    .profile-header-left h2 { font-size: 20px; font-weight: 500; margin-bottom: 3px; }
+    .profile-header-left p { font-size: 13px; color: #888; }
+    .profile-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-outline { padding: 8px 16px; border-radius: 8px; border: 0.5px solid #7F77DD; color: #534AB7; background: transparent; font-size: 13px; cursor: pointer; }
+    .btn-filled { padding: 8px 16px; border-radius: 8px; border: none; background: #534AB7; color: #fff; font-size: 13px; cursor: pointer; font-weight: 500; }
+    .profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .pstat { background: #f5f4f0; border-radius: 8px; padding: 12px; text-align: center; }
+    .pstat .ps-val { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+    .pstat .ps-label { font-size: 11px; color: #888; }
+    .profile-section { margin-bottom: 20px; }
+    .profile-section h3 { font-size: 14px; font-weight: 500; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+    .services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .service-row { font-size: 13px; display: flex; justify-content: space-between; padding: 8px; background: #f5f4f0; border-radius: 8px; }
+    .service-row span { color: #888; }
+    .event-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .event-tag { font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 500; }
+    .tag-purple { background: #EEEDFE; color: #3C3489; }
+    .tag-green { background: #EAF3DE; color: #3B6D11; }
+    .review-card { padding: 12px; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 10px; margin-bottom: 8px; }
+    .review-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .reviewer-avatar { width: 28px; height: 28px; border-radius: 50%; background: #E6F1FB; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: #185FA5; }
+    .reviewer-name { font-size: 13px; font-weight: 500; }
+    .review-date { font-size: 11px; color: #888; margin-left: auto; }
+    .review-text { font-size: 13px; color: #888; line-height: 1.5; }
+
+    .quote-form { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; max-width: 440px; margin: 0 auto; }
+    .qf-header { margin-bottom: 20px; }
+    .qf-header h3 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+    .qf-header p { font-size: 13px; color: #888; }
+    .qf-field { margin-bottom: 14px; }
+    .qf-field label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; }
+    .qf-field input, .qf-field select, .qf-field textarea { width: 100%; padding: 9px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f5f4f0; color: #1a1a18; font-size: 14px; font-family: inherit; }
+    .qf-field textarea { resize: none; height: 80px; }
+    .event-checkboxes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .ev-check { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; cursor: pointer; }
+    .ev-check input { width: 14px; height: 14px; accent-color: #534AB7; margin: 0; }
+    .qf-submit { width: 100%; padding: 11px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; }
+    .qf-vendor-preview { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f5f4f0; border-radius: 8px; margin-bottom: 16px; }
+    .qf-avatar { width: 36px; height: 36px; border-radius: 8px; background: #EEEDFE; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #3C3489; flex-shrink: 0; }
+    .qf-vname { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .qf-vcat { font-size: 11px; color: #888; }
+
+    .avatar-circle { width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; }
+    .avatar-lg { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Vendor marketplace — Indian wedding platform</h1>
+
+    <div class="tab-bar">
+      <div class="tab active" onclick="showTab('browse')">Browse vendors</div>
+      <div class="tab" onclick="showTab('profile')">Vendor profile</div>
+      <div class="tab" onclick="showTab('quote')">Request a quote</div>
+    </div>
+
+    <!-- BROWSE -->
+    <div id="tab-browse" class="screen active">
+      <div class="search-bar">
+        <input class="search-input" placeholder="Search vendors, styles, locations..." value="Mehndi artist Chicago" readonly/>
+        <button class="filter-btn active">Filters</button>
+        <button class="filter-btn">Sort</button>
+      </div>
+      <div class="cat-scroll">
+        <span class="cat-pill">All</span>
+        <span class="cat-pill">Photography & film</span>
+        <span class="cat-pill">Catering</span>
+        <span class="cat-pill">Decor & florals</span>
+        <span class="cat-pill active">Mehndi artist</span>
+        <span class="cat-pill">Hair & makeup</span>
+        <span class="cat-pill">Music & entertainment</span>
+        <span class="cat-pill">Pandit & officiant</span>
+        <span class="cat-pill">Invitations</span>
+        <span class="cat-pill">Attire & jewellery</span>
+      </div>
+      <div class="results-bar">
+        <p>24 mehndi artists near Chicago</p>
+        <div style="display:flex;gap:6px;">
+          <span class="badge badge-green">Verified only</span>
+          <span class="badge badge-purple">Bridal specialist</span>
+        </div>
+      </div>
+      <div class="vendor-grid">
+        <div class="vcard" onclick="showTab('profile')">
+          <div class="vcard-img" style="background:#FBEAF0;">
+            <div style="text-align:center;">
+              <div class="avatar-circle" style="background:#F4C0D1;color:#72243E;">MH</div>
+              <div style="font-size:10px;color:#993556;">Bridal specialist</div>
+            </div>
+          </div>
+          <div class="vcard-body">
+            <div class="vcard-top"><p class="vcard-name">Meena's Mehndi</p><div class="save-btn">♡</div></div>
+            <p class="vcard-cat">Mehndi artist</p>
+            <div class="vcard-meta">
+              <span class="star">★</span><span class="vcard-rating">4.9</span>
+              <span class="vcard-reviews">(83 reviews)</span>
+              <span class="verified-badge">Verified</span>
+            </div>
+            <p class="vcard-price">From <span>$800</span> · bridal package</p>
+            <p class="vcard-loc">Chicago, IL · travels within 60mi</p>
+          </div>
+        </div>
+        <div class="vcard" onclick="showTab('profile')">
+          <div class="vcard-img" style="background:#FAEEDA;">
+            <div style="text-align:center;">
+              <div class="avatar-circle" style="background:#FAC775;color:#633806;">RA</div>
+              <div style="font-size:10px;color:#854F0B;">15+ yrs experience</div>
+            </div>
+          </div>
+          <div class="vcard-body">
+            <div class="vcard-top"><p class="vcard-name">Rani Arts</p><div class="save-btn">♡</div></div>
+            <p class="vcard-cat">Mehndi artist</p>
+            <div class="vcard-meta">
+              <span class="star">★</span><span class="vcard-rating">4.8</span>
+              <span class="vcard-reviews">(61 reviews)</span>
+              <span class="verified-badge">Verified</span>
+            </div>
+            <p class="vcard-price">From <span>$650</span> · bridal package</p>
+            <p class="vcard-loc">Naperville, IL · travels within 80mi</p>
+          </div>
+        </div>
+        <div class="vcard" onclick="showTab('profile')">
+          <div class="vcard-img" style="background:#E1F5EE;">
+            <div style="text-align:center;">
+              <div class="avatar-circle" style="background:#9FE1CB;color:#085041;">SD</div>
+              <div style="font-size:10px;color:#0F6E56;">South Indian style</div>
+            </div>
+          </div>
+          <div class="vcard-body">
+            <div class="vcard-top"><p class="vcard-name">Shreya Designs</p><div class="save-btn">♡</div></div>
+            <p class="vcard-cat">Mehndi artist</p>
+            <div class="vcard-meta">
+              <span class="star">★</span><span class="vcard-rating">4.7</span>
+              <span class="vcard-reviews">(44 reviews)</span>
+              <span class="verified-badge">Verified</span>
+            </div>
+            <p class="vcard-price">From <span>$550</span> · bridal package</p>
+            <p class="vcard-loc">Evanston, IL · travels within 50mi</p>
+          </div>
+        </div>
+        <div class="vcard" onclick="showTab('profile')">
+          <div class="vcard-img" style="background:#EEEDFE;">
+            <div style="text-align:center;">
+              <div class="avatar-circle" style="background:#CECBF6;color:#26215C;">KM</div>
+              <div style="font-size:10px;color:#534AB7;">Rajasthani style</div>
+            </div>
+          </div>
+          <div class="vcard-body">
+            <div class="vcard-top"><p class="vcard-name">Kavya Mehndi Co.</p><div class="save-btn">♡</div></div>
+            <p class="vcard-cat">Mehndi artist</p>
+            <div class="vcard-meta">
+              <span class="star">★</span><span class="vcard-rating">4.9</span>
+              <span class="vcard-reviews">(29 reviews)</span>
+              <span class="verified-badge">Verified</span>
+            </div>
+            <p class="vcard-price">From <span>$700</span> · bridal package</p>
+            <p class="vcard-loc">Chicago, IL · travels within 100mi</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="tab-profile" class="screen">
+      <button class="profile-back" onclick="showTab('browse')">← Back to results</button>
+      <div class="profile-hero" style="background:#FBEAF0;">
+        <div style="text-align:center;">
+          <div class="avatar-lg" style="background:#F4C0D1;color:#72243E;">MH</div>
+          <div style="font-size:11px;color:#993556;font-weight:500;">Bridal specialist · Verified</div>
+        </div>
+      </div>
+      <div class="profile-header">
+        <div class="profile-header-left">
+          <h2>Meena's Mehndi</h2>
+          <p>Mehndi artist · Chicago, IL · travels within 60mi</p>
+        </div>
+        <div class="profile-actions">
+          <button class="btn-outline" onclick="showTab('quote')">Request quote</button>
+          <button class="btn-filled" onclick="showTab('quote')">Book now</button>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="pstat"><div class="ps-val">4.9</div><div class="ps-label">Rating</div></div>
+        <div class="pstat"><div class="ps-val">83</div><div class="ps-label">Reviews</div></div>
+        <div class="pstat"><div class="ps-val">6 yrs</div><div class="ps-label">On platform</div></div>
+      </div>
+      <div class="profile-section">
+        <h3>Services & pricing</h3>
+        <div class="services-grid">
+          <div class="service-row">Bridal full hands <span>from $800</span></div>
+          <div class="service-row">Bridal full arms <span>from $1,100</span></div>
+          <div class="service-row">Guest hands <span>$40 / guest</span></div>
+          <div class="service-row">Party package <span>from $600</span></div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <h3>Availability & events covered</h3>
+        <div class="event-tags">
+          <span class="event-tag tag-purple">Mehndi night</span>
+          <span class="event-tag tag-purple">Haldi</span>
+          <span class="event-tag tag-purple">Bridal party</span>
+          <span class="event-tag tag-green">Available Nov 12</span>
+        </div>
+      </div>
+      <div class="profile-section">
+        <h3>Reviews</h3>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-avatar">PR</div>
+            <span class="reviewer-name">Pooja R.</span>
+            <span style="font-size:12px;color:#EF9F27;margin-left:4px;">★★★★★</span>
+            <span class="review-date">Jan 2025</span>
+          </div>
+          <p class="review-text">Meena was absolutely incredible. She did mehndi for 12 of my guests and my bridal design in one evening — never felt rushed. The design lasted 3 weeks.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-avatar" style="background:#EAF3DE;color:#3B6D11;">AS</div>
+            <span class="reviewer-name">Ananya S.</span>
+            <span style="font-size:12px;color:#EF9F27;margin-left:4px;">★★★★★</span>
+            <span class="review-date">Nov 2024</span>
+          </div>
+          <p class="review-text">Booked Meena for both my Mehndi night and my sister's hands. She was on time, professional, and the designs were stunning. Highly recommend.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUOTE -->
+    <div id="tab-quote" class="screen">
+      <div class="quote-form">
+        <div class="qf-header">
+          <h3>Request a quote</h3>
+          <p>Meena will respond within 24 hours.</p>
+        </div>
+        <div class="qf-vendor-preview">
+          <div class="qf-avatar">MH</div>
+          <div>
+            <div class="qf-vname">Meena's Mehndi</div>
+            <div class="qf-vcat">Mehndi artist · Chicago, IL</div>
+          </div>
+          <span class="verified-badge" style="margin-left:auto;">Verified</span>
+        </div>
+        <div class="qf-field">
+          <label>Which events do you need coverage for?</label>
+          <div class="event-checkboxes">
+            <label class="ev-check"><input type="checkbox" checked/> Mehndi night</label>
+            <label class="ev-check"><input type="checkbox"/> Haldi</label>
+            <label class="ev-check"><input type="checkbox"/> Bridal party</label>
+            <label class="ev-check"><input type="checkbox"/> Other</label>
+          </div>
+        </div>
+        <div class="qf-field">
+          <label>Approximate guest count needing mehndi</label>
+          <input value="18 guests" readonly/>
+        </div>
+        <div class="qf-field">
+          <label>Event date</label>
+          <input value="Nov 12, 2025" readonly/>
+        </div>
+        <div class="qf-field">
+          <label>Your budget range</label>
+          <select><option>$500 – $1,000</option></select>
+        </div>
+        <div class="qf-field">
+          <label>Anything else Meena should know?</label>
+          <textarea readonly>Looking for Rajasthani-style bridal mehndi. Ceremony starts at 6pm, hoping to have mehndi done by 9pm for all guests.</textarea>
+        </div>
+        <button class="qf-submit">Send quote request</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      const tabs = ['browse', 'profile', 'quote'];
+      const idx = tabs.indexOf(id);
+      if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+    }
+  </script>
+</body>
+</html>

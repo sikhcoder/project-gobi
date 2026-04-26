@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor onboarding & dashboard — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; flex-wrap: wrap; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; white-space: nowrap; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .sl { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+
+    .step-progress { display: flex; align-items: center; gap: 0; margin-bottom: 32px; }
+    .step { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+    .step-circle.done { background: #1D9E75; color: #fff; }
+    .step-circle.active { background: #534AB7; color: #fff; }
+    .step-circle.todo { background: #f5f4f0; color: #888; border: 0.5px solid rgba(0,0,0,0.15); }
+    .step-label { font-size: 12px; }
+    .step-label.active { font-weight: 500; color: #534AB7; }
+    .step-label.done, .step-label.todo { color: #888; }
+    .step-line { height: 0.5px; background: rgba(0,0,0,0.15); flex: 1; margin: 0 8px; }
+    .step-line.done { background: #1D9E75; }
+
+    .onb-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 24px; max-width: 520px; margin: 0 auto; }
+    .onb-card h2 { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+    .onb-card p { font-size: 13px; color: #888; margin-bottom: 20px; line-height: 1.5; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+    .field input, .field select, .field textarea { width: 100%; padding: 9px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f5f4f0; color: #1a1a18; font-size: 14px; font-family: inherit; }
+    .field textarea { resize: none; height: 72px; line-height: 1.5; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cat-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .chip { padding: 5px 12px; border-radius: 20px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; cursor: pointer; background: #fff; }
+    .chip.selected { background: #534AB7; border-color: #534AB7; color: #fff; font-weight: 500; }
+    .btn-primary { width: 100%; padding: 11px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+    .btn-secondary { width: 100%; padding: 11px; border-radius: 8px; background: transparent; color: #534AB7; border: 1px solid #7F77DD; font-size: 14px; cursor: pointer; margin-top: 8px; }
+    .upload-zone { border: 1.5px dashed rgba(0,0,0,0.15); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; margin-bottom: 14px; }
+    .upload-zone p { font-size: 13px; color: #888; margin-bottom: 4px; }
+    .upload-zone span { font-size: 12px; color: #534AB7; }
+    .verification-badge { display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: #FAEEDA; border-radius: 8px; margin-bottom: 14px; }
+    .vb-icon { width: 28px; height: 28px; border-radius: 50%; background: #EF9F27; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; flex-shrink: 0; }
+    .vb-text { font-size: 12px; color: #854F0B; line-height: 1.5; }
+
+    .vd-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+    .vd-header h2 { font-size: 18px; font-weight: 500; margin-bottom: 3px; }
+    .vd-header p { font-size: 13px; color: #888; }
+    .verified-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 10px; background: #EAF3DE; font-size: 11px; font-weight: 500; color: #3B6D11; margin-top: 6px; }
+    .verified-dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+    .sc { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .sc-label { font-size: 11px; color: #888; margin-bottom: 5px; }
+    .sc-val { font-size: 20px; font-weight: 500; margin-bottom: 2px; }
+    .sc-sub { font-size: 11px; color: #888; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .panel { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .panel-header span { font-size: 14px; font-weight: 500; }
+    .panel-header a { font-size: 12px; color: #534AB7; cursor: pointer; }
+
+    .lead-row { padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .lead-row:last-child { border-bottom: none; }
+    .lead-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .lead-name { font-size: 13px; font-weight: 500; }
+    .lead-time { font-size: 11px; color: #888; }
+    .lead-detail { font-size: 12px; color: #888; margin-bottom: 6px; }
+    .lead-actions { display: flex; gap: 6px; }
+    .lead-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .lead-btn-outline { border: 0.5px solid rgba(0,0,0,0.15); color: #888; background: transparent; }
+    .lead-btn-primary { border: none; background: #534AB7; color: #fff; font-weight: 500; }
+
+    .booking-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .booking-row:last-child { border-bottom: none; }
+    .booking-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .booking-name { font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+    .booking-detail { font-size: 11px; color: #888; }
+    .status-pill { font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 500; }
+    .s-confirmed { background: #EAF3DE; color: #3B6D11; }
+    .s-pending { background: #FAEEDA; color: #854F0B; }
+    .s-deposit { background: #E6F1FB; color: #0C447C; }
+
+    .sub-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .tier-card { border: 0.5px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 14px; }
+    .tier-card.current { border: 2px solid #7F77DD; background: #EEEDFE; }
+    .tier-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+    .tier-card.current .tier-name { color: #3C3489; }
+    .tier-price { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+    .tier-price span { font-size: 12px; font-weight: 400; color: #888; }
+    .tier-features { display: flex; flex-direction: column; gap: 5px; }
+    .tf-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+    .tf-check { width: 12px; height: 12px; border-radius: 50%; background: #1D9E75; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tf-check::after { content: ''; display: block; width: 5px; height: 3px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+    .tf-x { width: 12px; height: 12px; border-radius: 50%; background: #f5f4f0; flex-shrink: 0; }
+    .tier-btn { width: 100%; padding: 7px; border-radius: 7px; font-size: 12px; cursor: pointer; margin-top: 10px; border: 0.5px solid rgba(0,0,0,0.15); background: transparent; color: #888; }
+    .tier-card.current .tier-btn { background: #534AB7; color: #fff; border-color: #534AB7; font-weight: 500; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Vendor onboarding & dashboard — Indian wedding platform</h1>
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('onb1')">Onboarding — basics</div>
+    <div class="tab" onclick="showTab('onb2')">Onboarding — profile</div>
+    <div class="tab" onclick="showTab('onb3')">Onboarding — verify</div>
+    <div class="tab" onclick="showTab('dash')">Vendor dashboard</div>
+    <div class="tab" onclick="showTab('sub')">Subscription</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="tab-onb1" class="screen active">
+    <div class="step-progress">
+      <div class="step"><div class="step-circle active">1</div><span class="step-label active">Basics</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-circle todo">2</div><span class="step-label todo">Profile</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-circle todo">3</div><span class="step-label todo">Services</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-circle todo">4</div><span class="step-label todo">Verify</span></div>
+    </div>
+    <div class="onb-card">
+      <h2>Tell us about your business</h2>
+      <p>This takes about 5 minutes. You can always edit your profile later.</p>
+      <div class="field"><label>Business name</label><input value="Meena's Mehndi" readonly/></div>
+      <div class="field">
+        <label>Category</label>
+        <div class="cat-chips">
+          <span class="chip selected">Mehndi artist</span>
+          <span class="chip">Photography & film</span>
+          <span class="chip">Catering</span>
+          <span class="chip">Hair & makeup</span>
+          <span class="chip">Decor & florals</span>
+          <span class="chip">Music & entertainment</span>
+          <span class="chip">Pandit & officiant</span>
+          <span class="chip">Invitations</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>City</label><input value="Chicago, IL" readonly/></div>
+        <div class="field"><label>Travel radius (miles)</label><input value="60" readonly/></div>
+      </div>
+      <div class="field">
+        <label>Traditions you specialise in</label>
+        <div class="cat-chips">
+          <span class="chip selected">Hindu</span>
+          <span class="chip selected">Sikh</span>
+          <span class="chip">Muslim</span>
+          <span class="chip">South Indian</span>
+          <span class="chip">Christian</span>
+          <span class="chip">All traditions</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showTab('onb2')">Continue</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="tab-onb2" class="screen">
+    <div class="step-progress">
+      <div class="step"><div class="step-circle done">✓</div><span class="step-label done">Basics</span></div>
+      <div class="step-line done"></div>
+      <div class="step"><div class="step-circle active">2</div><span class="step-label active">Profile</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-circle todo">3</div><span class="step-label todo">Services</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-circle todo">4</div><span class="step-label todo">Verify</span></div>
+    </div>
+    <div class="onb-card">
+      <h2>Build your profile</h2>
+      <p>Couples browse profiles before requesting quotes. A strong profile with photos gets 4× more enquiries.</p>
+      <div class="field">
+        <label>Bio — tell couples about your work and style</label>
+        <textarea readonly>I've been creating intricate mehndi designs for over 10 years, specialising in Punjabi and Rajasthani bridal styles. I work across Chicago and the greater Midwest, covering everything from intimate Mehndi nights to large wedding parties of 100+ guests.</textarea>
+      </div>
+      <div class="upload-zone">
+        <p>Upload portfolio photos</p>
+        <span>Drag & drop or click to browse · JPG, PNG · Max 10 photos</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;">
+        <div style="height:64px;border-radius:6px;background:#FBEAF0;border:0.5px solid rgba(0,0,0,0.08);"></div>
+        <div style="height:64px;border-radius:6px;background:#FAEEDA;border:0.5px solid rgba(0,0,0,0.08);"></div>
+        <div style="height:64px;border-radius:6px;background:#EEEDFE;border:0.5px solid rgba(0,0,0,0.08);"></div>
+        <div style="height:64px;border-radius:6px;background:#E1F5EE;border:0.5px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-size:20px;color:#888;cursor:pointer;">+</div>
+      </div>
+      <div class="field"><label>Website or Instagram (optional)</label><input value="instagram.com/meenasmehndi" readonly/></div>
+      <button class="btn-primary" onclick="showTab('onb3')">Continue</button>
+      <button class="btn-secondary" onclick="showTab('onb1')">Back</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="tab-onb3" class="screen">
+    <div class="step-progress">
+      <div class="step"><div class="step-circle done">✓</div><span class="step-label done">Basics</span></div>
+      <div class="step-line done"></div>
+      <div class="step"><div class="step-circle done">✓</div><span class="step-label done">Profile</span></div>
+      <div class="step-line done"></div>
+      <div class="step"><div class="step-circle done">✓</div><span class="step-label done">Services</span></div>
+      <div class="step-line done"></div>
+      <div class="step"><div class="step-circle active">4</div><span class="step-label active">Verify</span></div>
+    </div>
+    <div class="onb-card">
+      <h2>Get verified</h2>
+      <p>Verified vendors get a badge on their profile and appear higher in search results. We review within 2 business days.</p>
+      <div class="verification-badge">
+        <div class="vb-icon">!</div>
+        <div class="vb-text">Verification is required to receive quote requests and bookings. Your profile will be visible but limited until approved.</div>
+      </div>
+      <div class="field"><label>Business registration or tax ID</label><input placeholder="EIN or sole trader registration number"/></div>
+      <div class="field">
+        <label>Upload a document proving business identity</label>
+        <div class="upload-zone" style="margin-bottom:0;">
+          <p>Business licence, tax document, or government ID</p>
+          <span>PDF or image · Max 5MB</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Choose your subscription plan</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+          <label style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.12);cursor:pointer;">
+            <input type="radio" name="plan" style="accent-color:#534AB7;"/>
+            <div><div style="font-size:13px;font-weight:500;">Free listing</div><div style="font-size:11px;color:#888;">Profile visible, no quote requests</div></div>
+            <span style="margin-left:auto;font-size:13px;font-weight:500;">$0</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;border:2px solid #7F77DD;background:#EEEDFE;cursor:pointer;">
+            <input type="radio" name="plan" checked style="accent-color:#534AB7;"/>
+            <div><div style="font-size:13px;font-weight:500;color:#3C3489;">Standard</div><div style="font-size:11px;color:#534AB7;">Full profile, quote requests, reviews</div></div>
+            <span style="margin-left:auto;font-size:13px;font-weight:500;color:#3C3489;">$49/mo</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.12);cursor:pointer;">
+            <input type="radio" name="plan" style="accent-color:#534AB7;"/>
+            <div><div style="font-size:13px;font-weight:500;">Premium</div><div style="font-size:11px;color:#888;">Featured placement, analytics, priority support</div></div>
+            <span style="margin-left:auto;font-size:13px;font-weight:500;">$99/mo</span>
+          </label>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showTab('dash')">Submit for verification</button>
+      <button class="btn-secondary" onclick="showTab('onb2')">Back</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dash" class="screen">
+    <div class="vd-header">
+      <div>
+        <h2>Meena's Mehndi</h2>
+        <p>Mehndi artist · Chicago, IL · travels within 60mi</p>
+        <div class="verified-pill"><div class="verified-dot"></div>Verified vendor</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button style="padding:7px 14px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;background:transparent;cursor:pointer;">Edit profile</button>
+        <button style="padding:7px 14px;border-radius:8px;background:#534AB7;color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;">Manage availability</button>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="sc"><div class="sc-label">Quote requests</div><div class="sc-val">12</div><div class="sc-sub">This month</div></div>
+      <div class="sc"><div class="sc-label">Bookings confirmed</div><div class="sc-val" style="color:#1D9E75;">8</div><div class="sc-sub">Active bookings</div></div>
+      <div class="sc"><div class="sc-label">Revenue (paid)</div><div class="sc-val">$9,200</div><div class="sc-sub">This year</div></div>
+      <div class="sc"><div class="sc-label">Profile views</div><div class="sc-val">341</div><div class="sc-sub">Last 30 days</div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header"><span>New quote requests</span><a>View all →</a></div>
+        <div class="lead-row">
+          <div class="lead-top"><span class="lead-name">Priya & Arjun</span><span class="lead-time">2 hrs ago</span></div>
+          <div class="lead-detail">Mehndi night · Nov 12 · 18 guests · Budget $500–1,000</div>
+          <div class="lead-actions">
+            <button class="lead-btn lead-btn-outline">Decline</button>
+            <button class="lead-btn lead-btn-primary">Respond</button>
+          </div>
+        </div>
+        <div class="lead-row">
+          <div class="lead-top"><span class="lead-name">Kavya & Rohan</span><span class="lead-time">Yesterday</span></div>
+          <div class="lead-detail">Mehndi night + Bridal party · Dec 4 · 25 guests · Budget $800–1,500</div>
+          <div class="lead-actions">
+            <button class="lead-btn lead-btn-outline">Decline</button>
+            <button class="lead-btn lead-btn-primary">Respond</button>
+          </div>
+        </div>
+        <div class="lead-row">
+          <div class="lead-top"><span class="lead-name">Sunita & Dev</span><span class="lead-time">3 days ago</span></div>
+          <div class="lead-detail">Bridal full arms · Jan 18 · Budget $1,000+</div>
+          <div class="lead-actions">
+            <button class="lead-btn lead-btn-outline">Decline</button>
+            <button class="lead-btn lead-btn-primary">Respond</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span>Upcoming bookings</span><a>View all →</a></div>
+        <div class="booking-row">
+          <div class="booking-dot" style="background:#D4537E;"></div>
+          <div style="flex:1;"><div class="booking-name">Priya & Arjun · Mehndi</div><div class="booking-detail">Nov 12 · 6:00 PM · Chicago</div></div>
+          <div style="text-align:right;"><div style="font-size:13px;font-weight:500;margin-bottom:2px;">$900</div><span class="status-pill s-deposit">Deposit paid</span></div>
+        </div>
+        <div class="booking-row">
+          <div class="booking-dot" style="background:#1D9E75;"></div>
+          <div style="flex:1;"><div class="booking-name">Aisha & Zain · Mehndi</div><div class="booking-detail">Nov 22 · 5:00 PM · Naperville</div></div>
+          <div style="text-align:right;"><div style="font-size:13px;font-weight:500;margin-bottom:2px;">$1,200</div><span class="status-pill s-confirmed">Confirmed</span></div>
+        </div>
+        <div class="booking-row">
+          <div class="booking-dot" style="background:#534AB7;"></div>
+          <div style="flex:1;"><div class="booking-name">Kavya & Rohan · Mehndi</div><div class="booking-detail">Dec 4 · 6:00 PM · Chicago</div></div>
+          <div style="text-align:right;"><div style="font-size:13px;font-weight:500;margin-bottom:2px;">$1,400</div><span class="status-pill s-pending">Pending</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTION -->
+  <div id="tab-sub" class="screen">
+    <div style="background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <div class="sl" style="margin-bottom:4px;">Current plan</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:18px;font-weight:500;">Standard</span>
+            <span style="background:#EEEDFE;color:#3C3489;font-size:12px;font-weight:500;padding:3px 10px;border-radius:10px;">Active</span>
+          </div>
+          <div style="font-size:13px;color:#888;margin-top:4px;">$49/month · Renews Dec 14, 2025 · Billed to Visa ···4242</div>
+        </div>
+        <button style="padding:7px 14px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;background:transparent;cursor:pointer;">Manage billing</button>
+      </div>
+      <div class="sub-tiers">
+        <div class="tier-card">
+          <div class="tier-name">Free</div>
+          <div class="tier-price">$0<span>/month</span></div>
+          <div class="tier-features">
+            <div class="tf-row"><div class="tf-check"></div>Basic profile listing</div>
+            <div class="tf-row"><div class="tf-check"></div>Visible in search</div>
+            <div class="tf-row"><div class="tf-x"></div><span style="text-decoration:line-through;">Quote requests</span></div>
+            <div class="tf-row"><div class="tf-x"></div><span style="text-decoration:line-through;">Reviews</span></div>
+            <div class="tf-row"><div class="tf-x"></div><span style="text-decoration:line-through;">Analytics</span></div>
+          </div>
+          <button class="tier-btn">Downgrade</button>
+        </div>
+        <div class="tier-card current">
+          <div class="tier-name">Standard</div>
+          <div class="tier-price" style="color:#3C3489;">$49<span>/month</span></div>
+          <div class="tier-features">
+            <div class="tf-row"><div class="tf-check"></div>Full profile</div>
+            <div class="tf-row"><div class="tf-check"></div>Quote requests</div>
+            <div class="tf-row"><div class="tf-check"></div>Reviews & ratings</div>
+            <div class="tf-row"><div class="tf-check"></div>Basic analytics</div>
+            <div class="tf-row"><div class="tf-x"></div><span style="text-decoration:line-through;color:#534AB7;">Featured placement</span></div>
+          </div>
+          <button class="tier-btn">Current plan</button>
+        </div>
+        <div class="tier-card">
+          <div class="tier-name">Premium</div>
+          <div class="tier-price">$99<span>/month</span></div>
+          <div class="tier-features">
+            <div class="tf-row"><div class="tf-check"></div>Everything in Standard</div>
+            <div class="tf-row"><div class="tf-check"></div>Featured placement</div>
+            <div class="tf-row"><div class="tf-check"></div>Full analytics</div>
+            <div class="tf-row"><div class="tf-check"></div>Priority support</div>
+            <div class="tf-row"><div class="tf-check"></div>Booking management</div>
+          </div>
+          <button class="tier-btn" style="background:#534AB7;color:#fff;border-color:#534AB7;font-weight:500;">Upgrade</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const tabs = ['onb1','onb2','onb3','dash','sub'];
+  const idx = tabs.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform admin dashboard — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .sl { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .admin-banner { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+    .admin-banner h2 { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+    .admin-banner p { font-size: 13px; color: #888; }
+    .alert-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: #FAEEDA; font-size: 12px; color: #854F0B; font-weight: 500; white-space: nowrap; }
+    .alert-dot { width: 7px; height: 7px; border-radius: 50%; background: #EF9F27; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+    .sc { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .sc-label { font-size: 11px; color: #888; margin-bottom: 5px; }
+    .sc-val { font-size: 20px; font-weight: 500; margin-bottom: 2px; }
+    .sc-sub { font-size: 11px; color: #888; }
+    .trend-up { font-size: 11px; font-weight: 500; color: #1D9E75; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .panel { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .panel-header span { font-size: 14px; font-weight: 500; }
+    .panel-header a { font-size: 12px; color: #534AB7; cursor: pointer; }
+    .vq-row { padding: 12px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .vq-row:last-child { border-bottom: none; }
+    .vq-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .vq-name { font-size: 13px; font-weight: 500; }
+    .vq-time { font-size: 11px; color: #888; }
+    .vq-meta { font-size: 12px; color: #888; margin-bottom: 8px; }
+    .vq-docs { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+    .vq-doc { font-size: 10px; padding: 2px 7px; border-radius: 6px; background: #f5f4f0; color: #888; cursor: pointer; }
+    .vq-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .vq-btn { padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 500; }
+    .vq-approve { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #3B6D11; }
+    .vq-reject { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #A32D2D; }
+    .vq-review { background: #EEEDFE; color: #3C3489; border: 0.5px solid #7F77DD; }
+    .user-table { border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+    .ut-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 80px; gap: 8px; padding: 10px 16px; background: #f5f4f0; }
+    .ut-header span { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; }
+    .ut-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 80px; gap: 8px; padding: 11px 16px; border-top: 0.5px solid rgba(0,0,0,0.08); align-items: center; }
+    .ut-row:hover { background: #f5f4f0; }
+    .u-name { font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+    .u-email { font-size: 11px; color: #888; }
+    .u-type { font-size: 11px; padding: 2px 7px; border-radius: 8px; font-weight: 500; display: inline-block; }
+    .ut-couple { background: #EEEDFE; color: #3C3489; }
+    .ut-vendor { background: #E1F5EE; color: #085041; }
+    .u-date { font-size: 12px; color: #888; }
+    .u-action { font-size: 12px; color: #534AB7; cursor: pointer; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    .rev-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); gap: 12px; }
+    .rev-row:last-child { border-bottom: none; }
+    .rev-label { font-size: 13px; white-space: nowrap; }
+    .rev-val { font-size: 13px; font-weight: 500; white-space: nowrap; }
+    .rev-bar-bg { height: 4px; background: rgba(0,0,0,0.08); border-radius: 2px; flex: 1; }
+    .rev-bar { height: 4px; border-radius: 2px; background: #534AB7; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Platform admin dashboard — Indian wedding platform</h1>
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab" onclick="showTab('verify')">Vendor verification</div>
+    <div class="tab" onclick="showTab('users')">Users</div>
+    <div class="tab" onclick="showTab('revenue')">Revenue</div>
+  </div>
+
+  <div id="tab-overview" class="screen active">
+    <div class="admin-banner">
+      <div><h2>Platform admin</h2><p>Thursday, March 26, 2026 · All systems operational</p></div>
+      <div class="alert-pill"><div class="alert-dot"></div>7 vendors awaiting verification</div>
+    </div>
+    <div class="stat-grid">
+      <div class="sc"><div class="sc-label">Total couples</div><div class="sc-val">1,284</div><div class="trend-up">↑ 34 this week</div></div>
+      <div class="sc"><div class="sc-label">Active vendors</div><div class="sc-val">318</div><div class="trend-up">↑ 12 this week</div></div>
+      <div class="sc"><div class="sc-label">MRR</div><div class="sc-val">$18,400</div><div class="trend-up">↑ 8% MoM</div></div>
+      <div class="sc"><div class="sc-label">Quote requests</div><div class="sc-val">847</div><div class="sc-sub">This month</div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header"><span>Vendor verification queue</span><a onclick="showTab('verify')">View all →</a></div>
+        <div class="vq-row">
+          <div class="vq-top"><span class="vq-name">Rani Arts</span><span class="vq-time">2 hrs ago</span></div>
+          <div class="vq-meta">Mehndi artist · Naperville, IL · Standard plan</div>
+          <div class="vq-actions"><button class="vq-btn vq-approve">Approve</button><button class="vq-btn vq-reject">Reject</button><button class="vq-btn vq-review">Review docs</button></div>
+        </div>
+        <div class="vq-row">
+          <div class="vq-top"><span class="vq-name">Bollywood DJ Events</span><span class="vq-time">Yesterday</span></div>
+          <div class="vq-meta">Music & entertainment · Chicago, IL · Premium plan</div>
+          <div class="vq-actions"><button class="vq-btn vq-approve">Approve</button><button class="vq-btn vq-reject">Reject</button><button class="vq-btn vq-review">Review docs</button></div>
+        </div>
+        <div class="vq-row">
+          <div class="vq-top"><span class="vq-name">Spice & Saffron Catering</span><span class="vq-time">2 days ago</span></div>
+          <div class="vq-meta">Catering · Houston, TX · Standard plan</div>
+          <div class="vq-actions"><button class="vq-btn vq-approve">Approve</button><button class="vq-btn vq-reject">Reject</button><button class="vq-btn vq-review">Review docs</button></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span>Recent signups</span><a onclick="showTab('users')">View all →</a></div>
+        <div class="vq-row"><div class="vq-top"><span class="vq-name">Aisha & Zain</span><span class="vq-time">1 hr ago</span></div><div class="vq-meta">Couple · Muslim tradition · Chicago · Wedding Jan 2026</div></div>
+        <div class="vq-row"><div class="vq-top"><span class="vq-name">Priya & Arjun</span><span class="vq-time">3 hrs ago</span></div><div class="vq-meta">Couple · Hindu tradition · Chicago · Wedding Nov 2025</div></div>
+        <div class="vq-row"><div class="vq-top"><span class="vq-name">Kavya & Rohan</span><span class="vq-time">Yesterday</span></div><div class="vq-meta">Couple · Sikh tradition · Toronto · Wedding Dec 2025</div></div>
+        <div class="vq-row"><div class="vq-top"><span class="vq-name">Shreya Designs</span><span class="vq-time">Yesterday</span></div><div class="vq-meta">Vendor · Mehndi artist · Evanston, IL · Free plan</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span>Platform health</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+        <div style="background:#f5f4f0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:18px;font-weight:500;color:#1D9E75;margin-bottom:2px;">99.8%</div><div style="font-size:11px;color:#888;">Uptime (30d)</div></div>
+        <div style="background:#f5f4f0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:18px;font-weight:500;margin-bottom:2px;">1.2s</div><div style="font-size:11px;color:#888;">Avg. load time</div></div>
+        <div style="background:#f5f4f0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:18px;font-weight:500;margin-bottom:2px;">4,821</div><div style="font-size:11px;color:#888;">RSVPs sent (7d)</div></div>
+        <div style="background:#f5f4f0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:18px;font-weight:500;color:#1D9E75;margin-bottom:2px;">94%</div><div style="font-size:11px;color:#888;">Email delivery</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-verify" class="screen">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;">
+      <div><div style="font-size:15px;font-weight:500;">Vendor verification queue</div><div style="font-size:13px;color:#888;">7 vendors awaiting review</div></div>
+      <div style="display:flex;gap:8px;">
+        <button style="padding:7px 12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;background:transparent;cursor:pointer;">Oldest first</button>
+        <button style="padding:7px 12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;background:transparent;cursor:pointer;">Filter by category</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="vq-row" style="padding-top:0;">
+        <div class="vq-top"><span class="vq-name">Rani Arts</span><span class="vq-time">Submitted 2 hrs ago</span></div>
+        <div class="vq-meta">Mehndi artist · Naperville, IL · Standard plan ($49/mo) · 15+ years experience</div>
+        <div class="vq-docs"><span class="vq-doc">Business licence.pdf</span><span class="vq-doc">Tax ID.pdf</span><span class="vq-doc">Portfolio (12 photos)</span></div>
+        <div style="background:#f5f4f0;border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;color:#888;line-height:1.5;">"Specialising in Punjabi and Rajasthani mehndi styles for 15 years. Based in Naperville, travel within 80 miles. Worked with 200+ brides."</div>
+        <div class="vq-actions">
+          <button class="vq-btn vq-approve" style="padding:7px 16px;font-size:12px;">Approve & notify vendor</button>
+          <button class="vq-btn vq-reject" style="padding:7px 16px;font-size:12px;">Reject with reason</button>
+          <button class="vq-btn" style="padding:7px 16px;font-size:12px;background:#f5f4f0;color:#888;border:0.5px solid rgba(0,0,0,0.15);">Request more info</button>
+        </div>
+      </div>
+      <div class="vq-row">
+        <div class="vq-top"><span class="vq-name">Bollywood DJ Events</span><span class="vq-time">Submitted yesterday</span></div>
+        <div class="vq-meta">Music & entertainment · Chicago, IL · Premium plan ($99/mo)</div>
+        <div class="vq-docs"><span class="vq-doc">Business licence.pdf</span><span class="vq-doc">Insurance certificate.pdf</span></div>
+        <div class="vq-actions">
+          <button class="vq-btn vq-approve" style="padding:7px 16px;font-size:12px;">Approve & notify vendor</button>
+          <button class="vq-btn vq-reject" style="padding:7px 16px;font-size:12px;">Reject with reason</button>
+          <button class="vq-btn" style="padding:7px 16px;font-size:12px;background:#f5f4f0;color:#888;border:0.5px solid rgba(0,0,0,0.15);">Request more info</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-users" class="screen">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <input style="flex:1;min-width:160px;padding:8px 12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);background:#f5f4f0;color:#1a1a18;font-size:13px;font-family:inherit;" placeholder="Search users..."/>
+      <button style="padding:7px 12px;border-radius:8px;border:0.5px solid #7F77DD;font-size:12px;background:#EEEDFE;color:#3C3489;font-weight:500;cursor:pointer;">All users</button>
+      <button style="padding:7px 12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;background:transparent;color:#888;cursor:pointer;">Couples only</button>
+      <button style="padding:7px 12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;background:transparent;color:#888;cursor:pointer;">Vendors only</button>
+    </div>
+    <div class="user-table">
+      <div class="ut-header"><span>User</span><span>Type</span><span>Joined</span><span>Status</span><span>Actions</span></div>
+      <div class="ut-row"><div><div class="u-name">Priya & Arjun</div><div class="u-email">priya.sharma@gmail.com</div></div><span class="u-type ut-couple">Couple</span><span class="u-date">Mar 12, 2026</span><span style="font-size:12px;"><span class="status-dot" style="background:#1D9E75;"></span>Active</span><span class="u-action">View →</span></div>
+      <div class="ut-row"><div><div class="u-name">Meena's Mehndi</div><div class="u-email">meena@mehndi.com</div></div><span class="u-type ut-vendor">Vendor</span><span class="u-date">Feb 28, 2026</span><span style="font-size:12px;"><span class="status-dot" style="background:#1D9E75;"></span>Verified</span><span class="u-action">View →</span></div>
+      <div class="ut-row"><div><div class="u-name">Aisha & Zain</div><div class="u-email">aisha.khan@gmail.com</div></div><span class="u-type ut-couple">Couple</span><span class="u-date">Mar 26, 2026</span><span style="font-size:12px;"><span class="status-dot" style="background:#EF9F27;"></span>Onboarding</span><span class="u-action">View →</span></div>
+      <div class="ut-row"><div><div class="u-name">Rani Arts</div><div class="u-email">rani@raniarts.com</div></div><span class="u-type ut-vendor">Vendor</span><span class="u-date">Mar 26, 2026</span><span style="font-size:12px;"><span class="status-dot" style="background:#EF9F27;"></span>Pending</span><span class="u-action">View →</span></div>
+      <div class="ut-row"><div><div class="u-name">Kavya & Rohan</div><div class="u-email">kavya.r@gmail.com</div></div><span class="u-type ut-couple">Couple</span><span class="u-date">Mar 20, 2026</span><span style="font-size:12px;"><span class="status-dot" style="background:#1D9E75;"></span>Active</span><span class="u-action">View →</span></div>
+    </div>
+  </div>
+
+  <div id="tab-revenue" class="screen">
+    <div class="stat-grid" style="margin-bottom:24px;">
+      <div class="sc"><div class="sc-label">MRR</div><div class="sc-val">$18,400</div><div class="trend-up">↑ 8% MoM</div></div>
+      <div class="sc"><div class="sc-label">ARR (projected)</div><div class="sc-val">$220,800</div><div class="sc-sub">Based on current MRR</div></div>
+      <div class="sc"><div class="sc-label">Paid vendors</div><div class="sc-val">276</div><div class="trend-up">↑ 12 this month</div></div>
+      <div class="sc"><div class="sc-label">Avg. revenue / vendor</div><div class="sc-val">$66</div><div class="sc-sub">Blended across tiers</div></div>
+    </div>
+    <div class="panel" style="margin-bottom:16px;">
+      <div class="panel-header"><span>Revenue by subscription tier</span></div>
+      <div class="rev-row"><span class="rev-label">Standard ($49/mo)</span><div class="rev-bar-bg"><div class="rev-bar" style="width:72%;"></div></div><span class="rev-val">$11,760</span></div>
+      <div class="rev-row"><span class="rev-label">Premium ($99/mo)</span><div class="rev-bar-bg"><div class="rev-bar" style="width:36%;background:#D4537E;"></div></div><span class="rev-val">$6,336</span></div>
+      <div class="rev-row"><span class="rev-label">Free tier</span><div class="rev-bar-bg"><div class="rev-bar" style="width:0%;"></div></div><span class="rev-val" style="color:#888;">$0</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span>Vendor breakdown by tier</span></div>
+      <div class="rev-row"><span class="rev-label">Free (42 vendors)</span><div class="rev-bar-bg"><div class="rev-bar" style="width:13%;background:#B4B2A9;"></div></div><span class="rev-val" style="color:#888;">13%</span></div>
+      <div class="rev-row"><span class="rev-label">Standard (240 vendors)</span><div class="rev-bar-bg"><div class="rev-bar" style="width:75%;"></div></div><span class="rev-val">75%</span></div>
+      <div class="rev-row"><span class="rev-label">Premium (36 vendors)</span><div class="rev-bar-bg"><div class="rev-bar" style="width:11%;background:#D4537E;"></div></div><span class="rev-val">11%</span></div>
+    </div>
+  </div>
+</div>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const tabs = ['overview','verify','users','revenue'];
+  const idx = tabs.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>

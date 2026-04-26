@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sikh wedding templates — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 780px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .section-label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+
+    /* Welcome banner */
+    .welcome-banner { background: #EEEDFE; border: 0.5px solid #AFA9EC; border-radius: 12px; padding: 20px; margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .wb-text h2 { font-size: 16px; font-weight: 500; color: #3C3489; margin-bottom: 4px; }
+    .wb-text p { font-size: 13px; color: #534AB7; margin-bottom: 14px; line-height: 1.5; }
+    .wb-actions { display: flex; gap: 8px; }
+    .btn-purple { padding: 8px 16px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .btn-ghost-purple { padding: 8px 16px; border-radius: 8px; background: transparent; color: #534AB7; border: 1px solid #7F77DD; font-size: 13px; cursor: pointer; }
+    .pack-badge { background: #534AB7; color: #fff; font-size: 10px; font-weight: 500; padding: 4px 10px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
+
+    /* Progress row */
+    .progress-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+    .prog-card { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .pc-label { font-size: 11px; color: #888; margin-bottom: 6px; }
+    .pc-val { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+    .prog-bar-bg { height: 4px; background: rgba(0,0,0,0.08); border-radius: 2px; }
+    .prog-bar { height: 4px; border-radius: 2px; }
+
+    /* Phase blocks */
+    .phase-block { margin-bottom: 24px; }
+    .phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .phase-title { font-size: 14px; font-weight: 500; }
+    .phase-sub { font-size: 12px; color: #888; }
+    .phase-badge { font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 500; }
+    .badge-now { background: #FAEEDA; color: #854F0B; }
+    .badge-next { background: #EAF3DE; color: #0F6E56; }
+    .badge-later { background: #f5f4f0; color: #888; }
+
+    .task-list { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; }
+    .task-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .task-row:last-child { border-bottom: none; }
+    .task-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid rgba(0,0,0,0.2); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+    .task-check.done { background: #1D9E75; border-color: #1D9E75; }
+    .task-check.done::after { content: ''; display: block; width: 9px; height: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+    .task-body { flex: 1; }
+    .task-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .task-name.done { color: #888; text-decoration: line-through; font-weight: 400; }
+    .task-detail { font-size: 11px; color: #888; line-height: 1.4; }
+    .task-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .task-due { font-size: 11px; color: #888; white-space: nowrap; }
+    .task-due.urgent { color: #854F0B; font-weight: 500; }
+    .ceremony-tag { font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; background: #EEEDFE; color: #3C3489; }
+    .ceremony-tag.planning { background: #f5f4f0; color: #888; }
+    .ceremony-tag.reception { background: #E6F1FB; color: #0C447C; }
+
+    /* Budget */
+    .budget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .size-card { border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 16px; cursor: pointer; }
+    .size-card.selected { border: 2px solid #7F77DD; background: #EEEDFE; }
+    .size-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .size-card.selected h3 { color: #3C3489; }
+    .size-card p { font-size: 12px; color: #888; margin-bottom: 12px; }
+    .size-card.selected p { color: #534AB7; }
+    .budget-total { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+    .budget-breakdown { display: flex; flex-direction: column; gap: 5px; }
+    .bb-row { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+    .bb-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; }
+
+    /* Vendor shortlist */
+    .vendor-section { margin-bottom: 20px; }
+    .vendor-section h3 { font-size: 13px; font-weight: 500; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 0.5px solid rgba(0,0,0,0.08); display: flex; align-items: center; gap: 8px; }
+    .ev-dot-sm { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .vendor-checklist { display: flex; flex-direction: column; gap: 6px; }
+    .vc-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: #f5f4f0; border-radius: 8px; }
+    .vc-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .vc-name { font-size: 13px; font-weight: 500; flex: 1; }
+    .vc-note { font-size: 11px; color: #888; }
+    .vc-urgency { font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; white-space: nowrap; }
+    .urgency-critical { background: #FCEBEB; color: #A32D2D; }
+    .urgency-soon { background: #FAEEDA; color: #854F0B; }
+    .urgency-flexible { background: #EAF3DE; color: #3B6D11; }
+
+    /* Guest templates */
+    .guest-templates { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .gt-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
+    .gt-card:hover { border-color: rgba(0,0,0,0.2); }
+    .gt-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .gt-body { flex: 1; }
+    .gt-body h3 { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+    .gt-body p { font-size: 12px; color: #888; }
+    .gt-action { font-size: 12px; color: #534AB7; white-space: nowrap; }
+    .info-box { background: #f5f4f0; border-radius: 10px; padding: 14px; font-size: 13px; color: #888; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sikh wedding templates — Indian wedding platform</h1>
+
+    <div class="tab-bar">
+      <div class="tab active" onclick="showTab('checklist')">Planning checklist</div>
+      <div class="tab" onclick="showTab('budget')">Budget template</div>
+      <div class="tab" onclick="showTab('vendors')">Vendor shortlist</div>
+      <div class="tab" onclick="showTab('guests')">Guest templates</div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div id="tab-checklist" class="screen active">
+      <div class="welcome-banner">
+        <div class="wb-text">
+          <h2>Your Sikh wedding planning guide is ready</h2>
+          <p>We've pre-built your checklist, budget, vendor list and guest templates based on your tradition, ceremonies and wedding date. Start here — everything is customisable.</p>
+          <div class="wb-actions">
+            <button class="btn-purple">Use this template</button>
+            <button class="btn-ghost-purple">Browse other traditions</button>
+          </div>
+        </div>
+        <span class="pack-badge">Sikh wedding pack</span>
+      </div>
+
+      <div class="progress-row">
+        <div class="prog-card">
+          <div class="pc-label">Tasks complete</div>
+          <div class="pc-val">4 / 38</div>
+          <div class="prog-bar-bg"><div class="prog-bar" style="background:#534AB7;width:11%;"></div></div>
+        </div>
+        <div class="prog-card">
+          <div class="pc-label">Due this month</div>
+          <div class="pc-val" style="color:#854F0B;">7 tasks</div>
+          <div class="prog-bar-bg"><div class="prog-bar" style="background:#EF9F27;width:18%;"></div></div>
+        </div>
+        <div class="prog-card">
+          <div class="pc-label">Vendors booked</div>
+          <div class="pc-val">3 / 11</div>
+          <div class="prog-bar-bg"><div class="prog-bar" style="background:#1D9E75;width:27%;"></div></div>
+        </div>
+        <div class="prog-card">
+          <div class="pc-label">Budget allocated</div>
+          <div class="pc-val">38%</div>
+          <div class="prog-bar-bg"><div class="prog-bar" style="background:#D4537E;width:38%;"></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-title">Right now</span>
+          <span class="phase-badge badge-now">12+ months before</span>
+          <span class="phase-sub">The critical early bookings</span>
+        </div>
+        <div class="task-list">
+          <div class="task-row">
+            <div class="task-check done"></div>
+            <div class="task-body">
+              <div class="task-name done">Book the Gurudwara</div>
+              <div class="task-detail">Gurudwaras book out 18–24 months ahead for Anand Karaj. Confirm date and time slot.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due">Done</span>
+              <span class="ceremony-tag">Anand Karaj</span>
+            </div>
+          </div>
+          <div class="task-row">
+            <div class="task-check done"></div>
+            <div class="task-body">
+              <div class="task-name done">Book Ragis (Kirtan musicians)</div>
+              <div class="task-detail">Ragis who perform Shabads during the Anand Karaj are booked 12–18 months in advance. Don't delay.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due">Done</span>
+              <span class="ceremony-tag">Anand Karaj</span>
+            </div>
+          </div>
+          <div class="task-row">
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-name">Book wedding photographer</div>
+              <div class="task-detail">Look for photographers experienced with Sikh ceremonies — Anand Karaj lighting inside Gurudwaras is unique.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due urgent">Due in 3 weeks</span>
+              <span class="ceremony-tag">All events</span>
+            </div>
+          </div>
+          <div class="task-row">
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-name">Set overall budget</div>
+              <div class="task-detail">Use our Sikh wedding budget template as a starting point based on your guest count.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due urgent">Due soon</span>
+              <span class="ceremony-tag planning">Planning</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-title">Coming up</span>
+          <span class="phase-badge badge-next">9–12 months before</span>
+          <span class="phase-sub">Vendors and logistics</span>
+        </div>
+        <div class="task-list">
+          <div class="task-row">
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-name">Book Mehndi artist</div>
+              <div class="task-detail">Bridal mehndi specialists fill up fast — aim for Punjabi or Rajasthani style if preferred.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due">9 months out</span>
+              <span class="ceremony-tag" style="background:#FBEAF0;color:#72243E;">Mehndi</span>
+            </div>
+          </div>
+          <div class="task-row">
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-name">Book catering for Reception</div>
+              <div class="task-detail">Note: Langar at the Gurudwara is typically arranged separately. Reception catering is independent.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due">9 months out</span>
+              <span class="ceremony-tag reception">Reception</span>
+            </div>
+          </div>
+          <div class="task-row">
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-name">Send save the dates</div>
+              <div class="task-detail">Include all ceremony dates — Chunni, Vatna, Mehndi, Anand Karaj and Reception.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due">10 months out</span>
+              <span class="ceremony-tag">All events</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-title">Later</span>
+          <span class="phase-badge badge-later">3–6 months before</span>
+          <span class="phase-sub">Details and finishing touches</span>
+        </div>
+        <div class="task-list">
+          <div class="task-row">
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-name">Confirm Laavan order with Granthi</div>
+              <div class="task-detail">The four rounds of Laavan are central to the Anand Karaj — confirm timing and readings with your Granthi.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due">3 months out</span>
+              <span class="ceremony-tag">Anand Karaj</span>
+            </div>
+          </div>
+          <div class="task-row">
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-name">Finalise seating & catering numbers</div>
+              <div class="task-detail">Provide final headcount to caterers. Sikh weddings often run larger than expected — build in 10% buffer.</div>
+            </div>
+            <div class="task-right">
+              <span class="task-due">6 weeks out</span>
+              <span class="ceremony-tag reception">Reception</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUDGET -->
+    <div id="tab-budget" class="screen">
+      <div class="section-label">Choose your wedding size</div>
+      <div class="budget-grid">
+        <div class="size-card">
+          <h3>Intimate</h3>
+          <p>Under 150 guests</p>
+          <div class="budget-total">$22,000 – $35,000</div>
+          <div class="budget-breakdown">
+            <div class="bb-row"><span><span class="bb-dot" style="background:#534AB7;"></span>Photography</span><span>$4,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#1D9E75;"></span>Catering</span><span>$8,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#D4537E;"></span>Decor & florals</span><span>$4,500</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#EF9F27;"></span>Hair & makeup</span><span>$1,800</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#888;"></span>Other</span><span>$3,700</span></div>
+          </div>
+        </div>
+        <div class="size-card selected">
+          <h3>Traditional</h3>
+          <p>150 – 350 guests</p>
+          <div class="budget-total" style="color:#3C3489;">$40,000 – $75,000</div>
+          <div class="budget-breakdown">
+            <div class="bb-row"><span><span class="bb-dot" style="background:#534AB7;"></span>Photography & film</span><span>$7,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#1D9E75;"></span>Catering (Reception)</span><span>$18,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#D4537E;"></span>Decor & florals</span><span>$10,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#EF9F27;"></span>Hair & makeup</span><span>$3,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#D85A30;"></span>Mehndi & music</span><span>$4,500</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#888;"></span>Invitations & misc</span><span>$5,000</span></div>
+          </div>
+        </div>
+        <div class="size-card">
+          <h3>Grand</h3>
+          <p>350 – 600 guests</p>
+          <div class="budget-total">$80,000 – $150,000</div>
+          <div class="budget-breakdown">
+            <div class="bb-row"><span><span class="bb-dot" style="background:#534AB7;"></span>Photography & film</span><span>$12,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#1D9E75;"></span>Catering (Reception)</span><span>$40,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#D4537E;"></span>Decor & florals</span><span>$22,000</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#888;"></span>Other</span><span>$18,000</span></div>
+          </div>
+        </div>
+        <div class="size-card">
+          <h3>Luxury</h3>
+          <p>600+ guests</p>
+          <div class="budget-total">$150,000+</div>
+          <div class="budget-breakdown">
+            <div class="bb-row"><span><span class="bb-dot" style="background:#534AB7;"></span>Photography & film</span><span>$20,000+</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#1D9E75;"></span>Catering</span><span>$70,000+</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#D4537E;"></span>Decor & florals</span><span>$40,000+</span></div>
+            <div class="bb-row"><span><span class="bb-dot" style="background:#888;"></span>Other</span><span>Custom</span></div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-purple" style="width:100%;">Apply traditional template to my budget</button>
+    </div>
+
+    <!-- VENDORS -->
+    <div id="tab-vendors" class="screen">
+      <div class="vendor-section">
+        <h3><span class="ev-dot-sm" style="background:#EEEDFE;"></span> Anand Karaj — must book early</h3>
+        <div class="vendor-checklist">
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#EEEDFE;color:#3C3489;">GR</div>
+            <div class="vc-name">Granthi (officiant)</div>
+            <div class="vc-note">Confirm with your Gurudwara</div>
+            <span class="vc-urgency urgency-critical">Book now</span>
+          </div>
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#EEEDFE;color:#3C3489;">RA</div>
+            <div class="vc-name">Ragis (Kirtan musicians)</div>
+            <div class="vc-note">3–4 Ragis for Shabads during ceremony</div>
+            <span class="vc-urgency urgency-critical">Book now</span>
+          </div>
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#EEEDFE;color:#3C3489;">PH</div>
+            <div class="vc-name">Photographer (Gurudwara-experienced)</div>
+            <div class="vc-note">Low light, indoor ceremony specialist</div>
+            <span class="vc-urgency urgency-critical">Book now</span>
+          </div>
+        </div>
+      </div>
+      <div class="vendor-section">
+        <h3><span class="ev-dot-sm" style="background:#FBEAF0;"></span> Mehndi night</h3>
+        <div class="vendor-checklist">
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#FBEAF0;color:#72243E;">MH</div>
+            <div class="vc-name">Mehndi artist</div>
+            <div class="vc-note">Punjabi style preferred for Sikh weddings</div>
+            <span class="vc-urgency urgency-soon">Book in 1–2 months</span>
+          </div>
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#FBEAF0;color:#72243E;">DJ</div>
+            <div class="vc-name">DJ or live Dhol player</div>
+            <div class="vc-note">Bhangra set for Mehndi night dancing</div>
+            <span class="vc-urgency urgency-soon">Book in 2–3 months</span>
+          </div>
+        </div>
+      </div>
+      <div class="vendor-section">
+        <h3><span class="ev-dot-sm" style="background:#E1F5EE;"></span> Reception</h3>
+        <div class="vendor-checklist">
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#E1F5EE;color:#085041;">CT</div>
+            <div class="vc-name">Caterer</div>
+            <div class="vc-note">Note: Langar at Gurudwara is separate</div>
+            <span class="vc-urgency urgency-soon">Book in 2–3 months</span>
+          </div>
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#E1F5EE;color:#085041;">DC</div>
+            <div class="vc-name">Decor & florals</div>
+            <div class="vc-note">Marigold and rose arrangements typical</div>
+            <span class="vc-urgency urgency-flexible">3–4 months out</span>
+          </div>
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#E1F5EE;color:#085041;">MU</div>
+            <div class="vc-name">DJ / live band</div>
+            <div class="vc-note">Bhangra-capable DJ for reception floor</div>
+            <span class="vc-urgency urgency-flexible">3–4 months out</span>
+          </div>
+        </div>
+      </div>
+      <div class="vendor-section">
+        <h3><span class="ev-dot-sm" style="background:#FAEEDA;"></span> Bridal prep (all events)</h3>
+        <div class="vendor-checklist">
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#FAEEDA;color:#633806;">HM</div>
+            <div class="vc-name">Hair & makeup artist</div>
+            <div class="vc-note">Book for Mehndi, Anand Karaj & Reception separately</div>
+            <span class="vc-urgency urgency-soon">Book in 2 months</span>
+          </div>
+          <div class="vc-row">
+            <div class="vc-icon" style="background:#FAEEDA;color:#633806;">AT</div>
+            <div class="vc-name">Bridal attire (Salwar / Lehenga)</div>
+            <div class="vc-note">Allow 4–6 months for fittings and alterations</div>
+            <span class="vc-urgency urgency-soon">Order in 3 months</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-purple" style="width:100%;margin-top:4px;">Find these vendors in the marketplace</button>
+    </div>
+
+    <!-- GUESTS -->
+    <div id="tab-guests" class="screen">
+      <div class="section-label">Guest list templates</div>
+      <div class="guest-templates">
+        <div class="gt-card">
+          <div class="gt-icon" style="background:#EEEDFE;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="2" stroke="#534AB7" stroke-width="1.2" fill="none"/><line x1="6" y1="8" x2="14" y2="8" stroke="#534AB7" stroke-width="1" stroke-linecap="round"/><line x1="6" y1="11" x2="11" y2="11" stroke="#534AB7" stroke-width="1" stroke-linecap="round"/></svg>
+          </div>
+          <div class="gt-body">
+            <h3>Full Sikh wedding guest list</h3>
+            <p>Pre-sorted by family side (bride's / groom's) with columns for each ceremony — Chunni, Vatna, Mehndi, Anand Karaj, Reception</p>
+          </div>
+          <span class="gt-action">Use →</span>
+        </div>
+        <div class="gt-card">
+          <div class="gt-icon" style="background:#E1F5EE;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="3" stroke="#1D9E75" stroke-width="1.2" fill="none"/><path d="M4 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <div class="gt-body">
+            <h3>Anand Karaj only</h3>
+            <p>Smaller intimate list for the Gurudwara ceremony — some couples limit this to close family only due to space</p>
+          </div>
+          <span class="gt-action">Use →</span>
+        </div>
+        <div class="gt-card">
+          <div class="gt-icon" style="background:#FAEEDA;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="#EF9F27" stroke-width="1.2" fill="none"/><path d="M13 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="#EF9F27" stroke-width="1.2" fill="none"/><path d="M1 18c0-3.3 2.7-6 6-6m6 0c3.3 0 6 2.7 6 6" stroke="#EF9F27" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <div class="gt-body">
+            <h3>Pre-wedding events (family only)</h3>
+            <p>Chunni and Vatna ceremonies — typically close family only from both sides, around 40–80 guests</p>
+          </div>
+          <span class="gt-action">Use →</span>
+        </div>
+        <div class="gt-card">
+          <div class="gt-icon" style="background:#FBEAF0;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10l4 4 10-8" stroke="#D4537E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </div>
+          <div class="gt-body">
+            <h3>RSVP tracker by ceremony</h3>
+            <p>Track who's confirmed, declined or pending for each of your 5 events — with automatic reminder scheduling</p>
+          </div>
+          <span class="gt-action">Use →</span>
+        </div>
+      </div>
+      <div class="info-box">
+        All templates import directly into your guest dashboard. You can upload your own list via CSV and the platform will map columns automatically.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      const tabs = ['checklist','budget','vendors','guests'];
+      const idx = tabs.indexOf(id);
+      if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+    }
+  </script>
+</body>
+</html>

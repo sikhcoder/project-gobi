@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website builder — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 940px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Template gallery */
+    .filter-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .fp { padding: 6px 14px; border-radius: 20px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; cursor: pointer; background: #fff; }
+    .fp.active { background: #534AB7; border-color: #534AB7; color: #fff; font-weight: 500; }
+    .tmpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+    .tc { border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+    .tc:hover { border-color: rgba(0,0,0,0.25); }
+    .tc.selected { border: 2px solid #7F77DD; }
+    .tc-preview { height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
+    .tc-footer { padding: 10px 12px; border-top: 0.5px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; background: #fff; }
+    .tc-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .tc-sub { font-size: 11px; color: #888; }
+    .tc-badge { font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; }
+    .free-badge { background: #EAF3DE; color: #3B6D11; }
+    .paid-badge { background: #FAEEDA; color: #854F0B; }
+    .info-bar { background: #f5f4f0; border-radius: 10px; padding: 14px; font-size: 13px; color: #888; line-height: 1.5; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .info-bar button { padding: 7px 14px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; background: transparent; color: #888; cursor: pointer; white-space: nowrap; }
+
+    /* Editor */
+    .editor-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .editor-header h2 { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+    .editor-header p { font-size: 12px; color: #888; }
+    .editor-btns { display: flex; gap: 8px; }
+    .btn-outline { padding: 6px 14px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; background: transparent; cursor: pointer; }
+    .btn-filled { padding: 6px 14px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 12px; font-weight: 500; cursor: pointer; }
+    .editor-wrap { display: grid; grid-template-columns: 220px 1fr; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; }
+    .editor-sidebar { border-right: 0.5px solid rgba(0,0,0,0.1); background: #f5f4f0; }
+    .sidebar-header { padding: 14px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+    .sidebar-header p { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+    .sidebar-header span { font-size: 11px; color: #888; }
+    .section-list { padding: 8px; }
+    .sec-item { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 8px; cursor: pointer; margin-bottom: 2px; }
+    .sec-item:hover { background: #fff; }
+    .sec-item.active { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); }
+    .drag-handle { color: #aaa; font-size: 12px; cursor: grab; }
+    .sec-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sec-label { font-size: 13px; flex: 1; }
+    .sec-item.active .sec-label { font-weight: 500; color: #534AB7; }
+    .sec-vis { font-size: 11px; color: #aaa; cursor: pointer; }
+    .add-sec-btn { margin: 8px; padding: 9px; border-radius: 8px; border: 0.5px dashed rgba(0,0,0,0.15); text-align: center; font-size: 12px; color: #534AB7; cursor: pointer; }
+
+    /* Canvas */
+    .editor-canvas { background: #fff; display: flex; flex-direction: column; }
+    .canvas-toolbar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.1); flex-wrap: wrap; }
+    .tb-btn { padding: 5px 12px; border-radius: 6px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; background: transparent; cursor: pointer; }
+    .tb-btn.active { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; font-weight: 500; }
+    .tb-sep { width: 0.5px; height: 18px; background: rgba(0,0,0,0.1); margin: 0 4px; }
+    .tb-right { margin-left: auto; }
+
+    /* Site preview inside canvas */
+    .site-hero { background: #2C1A4E; padding: 32px 24px; text-align: center; }
+    .site-hero-names { font-size: 22px; font-weight: 500; color: #EDD9FF; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .site-hero-date { font-size: 13px; color: #C9A8F0; margin-bottom: 14px; }
+    .site-hero-divider { display: flex; align-items: center; gap: 8px; justify-content: center; }
+    .hero-line { height: 0.5px; width: 40px; background: #7F57B8; }
+    .hero-diamond { width: 6px; height: 6px; background: #C9A8F0; transform: rotate(45deg); }
+    .site-nav { background: #1E0F38; padding: 10px; display: flex; justify-content: center; gap: 20px; }
+    .site-nav a { font-size: 11px; color: #C9A8F0; text-decoration: none; cursor: pointer; }
+    .site-section { padding: 20px 24px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .site-section.editing { border: 1.5px solid #7F77DD; margin: -1px; }
+    .sec-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .sec-heading-label { font-size: 10px; font-weight: 500; color: #534AB7; text-transform: uppercase; letter-spacing: 0.1em; }
+    .sec-edit-btn { font-size: 10px; padding: 2px 8px; border-radius: 6px; background: #EEEDFE; color: #534AB7; border: none; cursor: pointer; }
+    .story-text { font-size: 13px; color: #888; line-height: 1.6; }
+    .events-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .ev-card { background: #f5f4f0; border-radius: 8px; padding: 10px; text-align: center; }
+    .ev-card-dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 6px; }
+    .ev-card-name { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+    .ev-card-date { font-size: 11px; color: #888; }
+
+    /* Section editor panel */
+    .section-editor { border-top: 0.5px solid rgba(0,0,0,0.1); background: #f5f4f0; padding: 16px; }
+    .se-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .se-header span { font-size: 13px; font-weight: 500; }
+    .se-close { font-size: 20px; color: #888; cursor: pointer; background: none; border: none; line-height: 1; }
+    .ai-btn { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: #EEEDFE; border: 0.5px solid #AFA9EC; color: #3C3489; font-size: 12px; cursor: pointer; margin-bottom: 12px; width: 100%; text-align: left; }
+    .ai-dot { width: 14px; height: 14px; border-radius: 50%; background: #534AB7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ai-dot::after { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+    .se-field { margin-bottom: 12px; }
+    .se-field label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; }
+    .se-field input { width: 100%; padding: 8px 10px; border-radius: 7px; border: 0.5px solid rgba(0,0,0,0.15); background: #fff; color: #1a1a18; font-size: 13px; font-family: inherit; }
+    .se-field textarea { width: 100%; padding: 8px 10px; border-radius: 7px; border: 0.5px solid rgba(0,0,0,0.15); background: #fff; color: #1a1a18; font-size: 13px; font-family: inherit; resize: none; height: 72px; line-height: 1.5; }
+    .se-actions { display: flex; gap: 8px; }
+    .se-save { flex: 1; padding: 8px; border-radius: 7px; background: #534AB7; color: #fff; border: none; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .se-cancel { padding: 8px 14px; border-radius: 7px; border: 0.5px solid rgba(0,0,0,0.15); background: transparent; color: #888; font-size: 13px; cursor: pointer; }
+
+    /* Mobile preview */
+    .preview-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .preview-url { font-size: 13px; color: #888; }
+    .preview-btns { display: flex; gap: 8px; }
+    .device-btn { padding: 6px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; background: transparent; color: #888; cursor: pointer; }
+    .device-btn.active { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; font-weight: 500; }
+    .mobile-frame { width: 320px; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 16px; overflow: hidden; }
+    .mobile-notch { background: #1A0F30; padding: 8px; text-align: center; }
+    .mobile-notch-bar { background: #2C1A4E; border-radius: 8px; height: 18px; width: 80px; margin: 0 auto; }
+    .mobile-hero { background: #2C1A4E; padding: 24px 16px; text-align: center; }
+    .mobile-hero-names { font-size: 16px; font-weight: 500; color: #EDD9FF; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .mobile-hero-divider { display: flex; align-items: center; gap: 6px; justify-content: center; margin-bottom: 6px; }
+    .mobile-line { height: 0.5px; width: 28px; background: #7F57B8; }
+    .mobile-diamond { width: 5px; height: 5px; background: #C9A8F0; transform: rotate(45deg); }
+    .mobile-date { font-size: 11px; color: #C9A8F0; }
+    .mobile-nav { background: #1E0F38; padding: 8px; display: flex; justify-content: center; gap: 14px; }
+    .mobile-nav span { font-size: 10px; color: #C9A8F0; }
+    .mobile-section { padding: 14px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .mobile-sec-label { font-size: 10px; font-weight: 500; color: #534AB7; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .mobile-story { font-size: 12px; color: #888; line-height: 1.5; }
+    .mobile-ev-list { display: flex; flex-direction: column; gap: 6px; }
+    .mobile-ev-item { display: flex; align-items: center; gap: 8px; padding: 8px; background: #f5f4f0; border-radius: 6px; }
+    .mobile-ev-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .mobile-ev-name { font-size: 12px; font-weight: 500; margin-bottom: 1px; }
+    .mobile-ev-date { font-size: 10px; color: #888; }
+    .mobile-rsvp { padding: 12px 16px; background: #f5f4f0; }
+    .mobile-rsvp-btn { width: 100%; padding: 10px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 13px; font-weight: 500; cursor: pointer; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Website builder — Indian wedding platform</h1>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('gallery')">Template gallery</div>
+    <div class="tab" onclick="showTab('editor')">Website editor</div>
+    <div class="tab" onclick="showTab('preview')">Live preview</div>
+  </div>
+
+  <!-- GALLERY -->
+  <div id="tab-gallery" class="screen active">
+    <div class="filter-row">
+      <span class="fp active">All templates</span>
+      <span class="fp">Free</span>
+      <span class="fp">Hindu</span>
+      <span class="fp">Sikh</span>
+      <span class="fp">Muslim</span>
+      <span class="fp">South Indian</span>
+      <span class="fp">Minimalist</span>
+    </div>
+    <div class="tmpl-grid">
+      <div class="tc selected" onclick="showTab('editor')">
+        <div class="tc-preview" style="background:#2C1A4E;">
+          <div style="font-size:13px;color:#EDD9FF;font-weight:500;letter-spacing:0.1em;margin-bottom:5px;">PRIYA & ARJUN</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+            <div style="height:0.5px;width:24px;background:#7F57B8;"></div>
+            <div style="width:5px;height:5px;background:#C9A8F0;transform:rotate(45deg);"></div>
+            <div style="height:0.5px;width:24px;background:#7F57B8;"></div>
+          </div>
+          <div style="font-size:10px;color:#C9A8F0;">November 14, 2025 · Chicago</div>
+        </div>
+        <div class="tc-footer">
+          <div><div class="tc-name">Mughal</div><div class="tc-sub">Deep jewel tones, gold</div></div>
+          <span class="tc-badge free-badge">Free</span>
+        </div>
+      </div>
+      <div class="tc" onclick="showTab('editor')">
+        <div class="tc-preview" style="background:#1A2E1A;">
+          <div style="font-size:13px;color:#D4EDCA;font-weight:400;letter-spacing:0.06em;margin-bottom:5px;">Priya & Arjun</div>
+          <div style="height:0.5px;width:48px;background:#5A8C4A;margin:4px auto;"></div>
+          <div style="font-size:10px;color:#9FC98F;">November 14, 2025</div>
+        </div>
+        <div class="tc-footer">
+          <div><div class="tc-name">Dravidian</div><div class="tc-sub">Deep green, temple motifs</div></div>
+          <span class="tc-badge free-badge">Free</span>
+        </div>
+      </div>
+      <div class="tc" onclick="showTab('editor')">
+        <div class="tc-preview" style="background:#FAF8F5;">
+          <div style="font-size:13px;color:#2C2C2A;font-weight:400;letter-spacing:0.04em;margin-bottom:5px;">Priya & Arjun</div>
+          <div style="height:0.5px;width:40px;background:#B4B2A9;margin:4px auto;"></div>
+          <div style="font-size:10px;color:#888780;">14 · 11 · 2025 · Chicago</div>
+        </div>
+        <div class="tc-footer">
+          <div><div class="tc-name">Minimalist</div><div class="tc-sub">Clean, ivory, modern</div></div>
+          <span class="tc-badge free-badge">Free</span>
+        </div>
+      </div>
+      <div class="tc" onclick="showTab('editor')">
+        <div class="tc-preview" style="background:#7B1F3A;">
+          <div style="font-size:13px;color:#FFD97A;font-weight:500;letter-spacing:0.06em;margin-bottom:5px;">Priya & Arjun</div>
+          <div style="display:flex;gap:4px;justify-content:center;margin-bottom:5px;">
+            <div style="width:4px;height:4px;border-radius:50%;background:#F4A0B0;"></div>
+            <div style="width:4px;height:4px;border-radius:50%;background:#FFD97A;"></div>
+            <div style="width:4px;height:4px;border-radius:50%;background:#F4A0B0;"></div>
+          </div>
+          <div style="font-size:10px;color:#F4A0B0;">Nov 14, 2025</div>
+        </div>
+        <div class="tc-footer">
+          <div><div class="tc-name">Vibrant</div><div class="tc-sub">Hot pink, marigold, bold</div></div>
+          <span class="tc-badge free-badge">Free</span>
+        </div>
+      </div>
+      <div class="tc" onclick="showTab('editor')">
+        <div class="tc-preview" style="background:#0C2344;">
+          <div style="font-size:13px;color:#F5D87A;font-weight:500;letter-spacing:0.08em;margin-bottom:5px;">Priya & Arjun</div>
+          <div style="height:1px;width:48px;background:#D4A830;margin:4px auto;"></div>
+          <div style="font-size:10px;color:#B5C8E8;">Anand Karaj · Nov 14, 2025</div>
+        </div>
+        <div class="tc-footer">
+          <div><div class="tc-name">Sikh</div><div class="tc-sub">Navy, gold, Gurudwara</div></div>
+          <span class="tc-badge free-badge">Free</span>
+        </div>
+      </div>
+      <div class="tc" onclick="showTab('editor')">
+        <div class="tc-preview" style="background:#FDF0F4;">
+          <div style="font-size:13px;color:#72243E;font-weight:400;letter-spacing:0.04em;margin-bottom:5px;">Priya & Arjun</div>
+          <div style="height:0.5px;width:40px;background:#ED93B1;margin:4px auto;"></div>
+          <div style="font-size:10px;color:#993556;">November 14, 2025</div>
+        </div>
+        <div class="tc-footer">
+          <div><div class="tc-name">Pastel garden</div><div class="tc-sub">Blush, rose, soft</div></div>
+          <span class="tc-badge free-badge">Free</span>
+        </div>
+      </div>
+    </div>
+    <div class="info-bar">
+      <span>All 6 templates are free at launch. Premium templates with advanced animations and layouts coming soon.</span>
+      <button>What's coming →</button>
+    </div>
+  </div>
+
+  <!-- EDITOR -->
+  <div id="tab-editor" class="screen">
+    <div class="editor-header">
+      <div>
+        <h2>Editing: Mughal template</h2>
+        <p>shaadi.com/priya-arjun · Last saved 2 min ago</p>
+      </div>
+      <div class="editor-btns">
+        <button class="btn-outline" onclick="showTab('preview')">Preview site</button>
+        <button class="btn-filled">Publish changes</button>
+      </div>
+    </div>
+
+    <div class="editor-wrap">
+      <div class="editor-sidebar">
+        <div class="sidebar-header">
+          <p>Sections</p>
+          <span>Drag to reorder</span>
+        </div>
+        <div class="section-list">
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#534AB7;"></div>
+            <span class="sec-label">Hero</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item active">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#D4537E;"></div>
+            <span class="sec-label">Our story</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#1D9E75;"></div>
+            <span class="sec-label">Events</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#EF9F27;"></div>
+            <span class="sec-label">Wedding party</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#D85A30;"></div>
+            <span class="sec-label">Travel & stay</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#0F6E56;"></div>
+            <span class="sec-label">Registry</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#888780;"></div>
+            <span class="sec-label">FAQs</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#3C3489;"></div>
+            <span class="sec-label">RSVP</span>
+            <span class="sec-vis">●</span>
+          </div>
+          <div class="sec-item">
+            <span class="drag-handle">⠿</span>
+            <div class="sec-dot" style="background:#B4B2A9;"></div>
+            <span class="sec-label">Photo gallery</span>
+            <span class="sec-vis">○</span>
+          </div>
+        </div>
+        <div class="add-sec-btn">+ Add section</div>
+      </div>
+
+      <div class="editor-canvas">
+        <div class="canvas-toolbar">
+          <button class="tb-btn active">Edit</button>
+          <button class="tb-btn">Drag & drop</button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn active">Desktop</button>
+          <button class="tb-btn">Mobile</button>
+          <div class="tb-right">
+            <button class="tb-btn" onclick="showTab('gallery')">Change template</button>
+          </div>
+        </div>
+
+        <div class="site-hero">
+          <div class="site-hero-names">Priya & Arjun</div>
+          <div class="site-hero-date">November 14, 2025 · Chicago, Illinois</div>
+          <div class="site-hero-divider">
+            <div class="hero-line"></div>
+            <div class="hero-diamond"></div>
+            <div class="hero-line"></div>
+          </div>
+        </div>
+        <div class="site-nav">
+          <a>Our story</a><a>Events</a><a>Travel</a><a>Registry</a><a>RSVP</a>
+        </div>
+
+        <div class="site-section editing">
+          <div class="sec-heading">
+            <span class="sec-heading-label">Our story</span>
+            <button class="sec-edit-btn">Editing</button>
+          </div>
+          <p class="story-text">We met at a Diwali celebration in 2019 — Priya was the one laughing the loudest, and Arjun was the one pretending not to notice. Six years, two cities, and one very patient Labrador later, we're finally tying the knot.</p>
+        </div>
+
+        <div class="site-section">
+          <div class="sec-heading">
+            <span class="sec-heading-label">Events</span>
+            <button class="sec-edit-btn">Edit</button>
+          </div>
+          <div class="events-row">
+            <div class="ev-card">
+              <div class="ev-card-dot" style="background:#D4537E;"></div>
+              <div class="ev-card-name">Mehndi</div>
+              <div class="ev-card-date">Nov 12 · 6:00 PM</div>
+            </div>
+            <div class="ev-card">
+              <div class="ev-card-dot" style="background:#534AB7;"></div>
+              <div class="ev-card-name">Wedding</div>
+              <div class="ev-card-date">Nov 14 · 11:00 AM</div>
+            </div>
+            <div class="ev-card">
+              <div class="ev-card-dot" style="background:#D85A30;"></div>
+              <div class="ev-card-name">Reception</div>
+              <div class="ev-card-date">Nov 14 · 7:00 PM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-editor">
+          <div class="se-header">
+            <span>Editing: Our story</span>
+            <button class="se-close">×</button>
+          </div>
+          <button class="ai-btn">
+            <div class="ai-dot"></div>
+            <span>AI assist — describe your story and I'll write it for you →</span>
+          </button>
+          <div class="se-field">
+            <label>Story text</label>
+            <textarea>We met at a Diwali celebration in 2019 — Priya was the one laughing the loudest, and Arjun was the one pretending not to notice. Six years, two cities, and one very patient Labrador later, we're finally tying the knot.</textarea>
+          </div>
+          <div class="se-field">
+            <label>Section heading</label>
+            <input value="Our story" />
+          </div>
+          <div class="se-actions">
+            <button class="se-cancel">Cancel</button>
+            <button class="se-save">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div id="tab-preview" class="screen">
+    <div class="preview-controls">
+      <span class="preview-url">shaadi.com/priya-arjun</span>
+      <div class="preview-btns">
+        <button class="device-btn">Desktop</button>
+        <button class="device-btn active">Mobile</button>
+        <button class="btn-filled" onclick="showTab('editor')">Back to editor</button>
+      </div>
+    </div>
+    <div style="background:#f5f4f0;border-radius:12px;padding:24px;display:flex;justify-content:center;">
+      <div class="mobile-frame">
+        <div class="mobile-notch">
+          <div class="mobile-notch-bar"></div>
+        </div>
+        <div class="mobile-hero">
+          <div class="mobile-hero-names">Priya & Arjun</div>
+          <div class="mobile-hero-divider">
+            <div class="mobile-line"></div>
+            <div class="mobile-diamond"></div>
+            <div class="mobile-line"></div>
+          </div>
+          <div class="mobile-date">November 14, 2025 · Chicago</div>
+        </div>
+        <div class="mobile-nav">
+          <span>Story</span><span>Events</span><span>Travel</span><span>RSVP</span>
+        </div>
+        <div class="mobile-section">
+          <div class="mobile-sec-label">Our story</div>
+          <p class="mobile-story">We met at a Diwali celebration in 2019 — Priya was the one laughing the loudest, and Arjun was the one pretending not to notice.</p>
+        </div>
+        <div class="mobile-section">
+          <div class="mobile-sec-label">Events</div>
+          <div class="mobile-ev-list">
+            <div class="mobile-ev-item">
+              <div class="mobile-ev-dot" style="background:#D4537E;"></div>
+              <div><div class="mobile-ev-name">Mehndi</div><div class="mobile-ev-date">Nov 12 · 6:00 PM</div></div>
+            </div>
+            <div class="mobile-ev-item">
+              <div class="mobile-ev-dot" style="background:#534AB7;"></div>
+              <div><div class="mobile-ev-name">Wedding</div><div class="mobile-ev-date">Nov 14 · 11:00 AM</div></div>
+            </div>
+            <div class="mobile-ev-item">
+              <div class="mobile-ev-dot" style="background:#D85A30;"></div>
+              <div><div class="mobile-ev-name">Reception</div><div class="mobile-ev-date">Nov 14 · 7:00 PM</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mobile-rsvp">
+          <button class="mobile-rsvp-btn">RSVP now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showTab(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    const tabs = ['gallery', 'editor', 'preview'];
+    const idx = tabs.indexOf(id);
+    if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+  }
+</script>
+</body>
+</html>

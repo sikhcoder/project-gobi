@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  /* Primary brand colors */
+  --color-primary: #534AB7;
+  --color-primary-light: #7F77DD;
+  --color-primary-pale: #EEEDFE;
+  --color-primary-dark: #3C3489;
+
+  /* Ceremony event colors */
+  --color-ceremony-mehndi: #D4537E;
+  --color-ceremony-haldi: #EF9F27;
+  --color-ceremony-sangeet: #1D9E75;
+  --color-ceremony-wedding: #534AB7;
+  --color-ceremony-reception: #D85A30;
+
+  /* Status colors */
+  --color-success: #1D9E75;
+  --color-success-text: #3B6D11;
+  --color-success-bg: #EAF3DE;
+  --color-warning: #EF9F27;
+  --color-warning-text: #854F0B;
+  --color-warning-bg: #FAEEDA;
+  --color-danger: #A32D2D;
+  --color-danger-bg: #FCEBEB;
+
+  /* Neutral colors */
+  --color-neutral-bg: #f5f4f0;
+  --color-neutral-text: #1a1a18;
+  --color-neutral-secondary: #888888;
+
+  /* Font family */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  background-color: var(--color-neutral-bg);
+  color: var(--color-neutral-text);
+}

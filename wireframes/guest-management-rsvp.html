@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guest management & RSVP — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .sl { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+
+    /* Stats */
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+    .sc { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .sc-label { font-size: 11px; color: #888; margin-bottom: 5px; }
+    .sc-val { font-size: 20px; font-weight: 500; margin-bottom: 2px; }
+    .sc-sub { font-size: 11px; color: #888; }
+
+    /* Toolbar */
+    .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .search-box { flex: 1; min-width: 160px; padding: 8px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f5f4f0; color: #1a1a18; font-size: 13px; font-family: inherit; }
+    .tb-btn { padding: 7px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; background: transparent; cursor: pointer; white-space: nowrap; }
+    .tb-btn.active { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; font-weight: 500; }
+    .tb-btn-primary { padding: 7px 14px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 12px; font-weight: 500; cursor: pointer; }
+
+    /* Event filter pills */
+    .event-pills { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .ep { padding: 5px 12px; border-radius: 20px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; cursor: pointer; background: #fff; display: flex; align-items: center; gap: 5px; }
+    .ep-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Bulk action bar */
+    .bulk-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #EEEDFE; border-radius: 8px; margin-bottom: 12px; }
+    .bulk-bar span { font-size: 13px; color: #3C3489; font-weight: 500; flex: 1; }
+    .bulk-btn { padding: 5px 12px; border-radius: 6px; border: 0.5px solid #7F77DD; font-size: 12px; color: #534AB7; background: transparent; cursor: pointer; }
+
+    /* Guest table */
+    .guest-table { border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+    .gt-header { display: grid; grid-template-columns: 24px 2fr 1fr 1fr 1fr 1fr 80px; gap: 8px; align-items: center; padding: 10px 16px; background: #f5f4f0; }
+    .gt-header span { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; }
+    .gt-row { display: grid; grid-template-columns: 24px 2fr 1fr 1fr 1fr 1fr 80px; gap: 8px; align-items: center; padding: 11px 16px; border-top: 0.5px solid rgba(0,0,0,0.08); cursor: pointer; }
+    .gt-row:hover { background: #f5f4f0; }
+    .g-name { font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+    .g-email { font-size: 11px; color: #888; }
+    .g-side { font-size: 12px; color: #888; }
+    .rsvp-pill { font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 500; display: inline-block; }
+    .r-confirmed { background: #EAF3DE; color: #3B6D11; }
+    .r-declined { background: #FCEBEB; color: #A32D2D; }
+    .r-pending { background: #FAEEDA; color: #854F0B; }
+    .r-na { background: #f5f4f0; color: #888; }
+    .g-events { display: flex; gap: 3px; flex-wrap: wrap; }
+    .ev-pip { width: 8px; height: 8px; border-radius: 50%; }
+    .row-action { font-size: 12px; color: #534AB7; cursor: pointer; white-space: nowrap; }
+
+    /* Guest detail */
+    .guest-panel { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; }
+    .gp-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .gp-avatar { width: 44px; height: 44px; border-radius: 50%; background: #EEEDFE; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500; color: #3C3489; flex-shrink: 0; }
+    .gp-name { font-size: 16px; font-weight: 500; margin-bottom: 2px; }
+    .gp-meta { font-size: 12px; color: #888; }
+    .gp-ev-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .gp-ev-row:last-child { border-bottom: none; }
+    .gp-ev-left { display: flex; align-items: center; gap: 8px; }
+    .gp-ev-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .gp-ev-name { font-size: 13px; font-weight: 500; }
+    .gp-ev-date { font-size: 11px; color: #888; }
+    .gp-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .gp-btn { flex: 1; padding: 8px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 12px; color: #888; background: transparent; cursor: pointer; }
+    .gp-btn-primary { flex: 1; padding: 8px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 12px; font-weight: 500; cursor: pointer; }
+
+    /* Guest-facing RSVP */
+    .rsvp-page { max-width: 420px; margin: 0 auto; }
+    .rsvp-hero { background: #2C1A4E; border-radius: 12px; padding: 28px 20px; text-align: center; margin-bottom: 20px; }
+    .rsvp-hero-names { font-size: 20px; font-weight: 500; color: #EDD9FF; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .rsvp-hero-date { font-size: 12px; color: #C9A8F0; margin-bottom: 10px; }
+    .rsvp-divider { display: flex; align-items: center; gap: 8px; justify-content: center; }
+    .rsvp-line { height: 0.5px; width: 32px; background: #7F57B8; }
+    .rsvp-diamond { width: 5px; height: 5px; background: #C9A8F0; transform: rotate(45deg); }
+    .rsvp-greeting { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .rsvp-greeting h3 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+    .rsvp-greeting p { font-size: 13px; color: #888; line-height: 1.5; }
+    .rsvp-ev-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; margin-bottom: 10px; }
+    .rsvp-ev-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .rsvp-ev-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+    .rsvp-ev-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+    .rsvp-ev-info { font-size: 12px; color: #888; }
+    .rsvp-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .rsvp-opt { padding: 10px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); font-size: 13px; text-align: center; cursor: pointer; background: #fff; color: #888; }
+    .rsvp-opt.yes { background: #EAF3DE; border-color: #3B6D11; color: #3B6D11; font-weight: 500; }
+    .rsvp-opt.no { background: #FCEBEB; border-color: #A32D2D; color: #A32D2D; font-weight: 500; }
+    .rsvp-notes { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .rsvp-notes label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; }
+    .rsvp-notes textarea { width: 100%; padding: 8px 10px; border-radius: 7px; border: 0.5px solid rgba(0,0,0,0.15); background: #f5f4f0; color: #1a1a18; font-size: 13px; font-family: inherit; resize: none; height: 60px; }
+    .rsvp-submit { width: 100%; padding: 13px; border-radius: 10px; background: #534AB7; color: #fff; border: none; font-size: 14px; font-weight: 500; cursor: pointer; }
+
+    /* Confirmation */
+    .confirm-screen { max-width: 380px; margin: 0 auto; text-align: center; padding: 20px 0; }
+    .confirm-icon { width: 56px; height: 56px; border-radius: 50%; background: #EAF3DE; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+    .confirm-icon::after { content: ''; display: block; width: 22px; height: 13px; border-left: 2.5px solid #1D9E75; border-bottom: 2.5px solid #1D9E75; transform: rotate(-45deg) translateY(-3px); }
+    .confirm-title { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+    .confirm-sub { font-size: 13px; color: #888; line-height: 1.5; margin-bottom: 24px; }
+    .confirm-summary { background: #f5f4f0; border-radius: 10px; padding: 14px; margin-bottom: 20px; text-align: left; }
+    .cs-label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .cs-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .cs-row:last-child { border-bottom: none; }
+    .cs-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .cs-name { font-size: 13px; flex: 1; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Guest management & RSVP tracker — Indian wedding platform</h1>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('guests')">Guest list</div>
+    <div class="tab" onclick="showTab('detail')">Guest detail</div>
+    <div class="tab" onclick="showTab('rsvp')">Guest RSVP page</div>
+    <div class="tab" onclick="showTab('confirm')">RSVP confirmation</div>
+  </div>
+
+  <!-- GUEST LIST -->
+  <div id="tab-guests" class="screen active">
+    <div class="stat-row">
+      <div class="sc"><div class="sc-label">Total guests</div><div class="sc-val">312</div><div class="sc-sub">Across all events</div></div>
+      <div class="sc"><div class="sc-label">Confirmed</div><div class="sc-val" style="color:#1D9E75;">187</div><div class="sc-sub">60% responded</div></div>
+      <div class="sc"><div class="sc-label">Pending</div><div class="sc-val" style="color:#854F0B;">98</div><div class="sc-sub">No response yet</div></div>
+      <div class="sc"><div class="sc-label">Declined</div><div class="sc-val" style="color:#A32D2D;">27</div><div class="sc-sub">Won't attend</div></div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-box" placeholder="Search guests by name or email..."/>
+      <button class="tb-btn active">All guests</button>
+      <button class="tb-btn">Bride's side</button>
+      <button class="tb-btn">Groom's side</button>
+      <button class="tb-btn">Pending only</button>
+      <button class="tb-btn-primary">+ Add guests</button>
+    </div>
+
+    <div class="event-pills">
+      <div class="ep" style="border-color:#534AB7;background:#EEEDFE;color:#3C3489;font-weight:500;">
+        <div class="ep-dot" style="background:#534AB7;"></div>All events
+      </div>
+      <div class="ep"><div class="ep-dot" style="background:#D4537E;"></div>Mehndi</div>
+      <div class="ep"><div class="ep-dot" style="background:#EF9F27;"></div>Haldi</div>
+      <div class="ep"><div class="ep-dot" style="background:#1D9E75;"></div>Sangeet</div>
+      <div class="ep"><div class="ep-dot" style="background:#534AB7;"></div>Wedding</div>
+      <div class="ep"><div class="ep-dot" style="background:#D85A30;"></div>Reception</div>
+    </div>
+
+    <div class="bulk-bar">
+      <span>3 guests selected</span>
+      <button class="bulk-btn">Send RSVP reminder</button>
+      <button class="bulk-btn">Assign to event</button>
+      <button class="bulk-btn">Export</button>
+    </div>
+
+    <div class="guest-table">
+      <div class="gt-header">
+        <input type="checkbox" style="accent-color:#534AB7;width:14px;height:14px;"/>
+        <span>Guest</span><span>Side</span><span>Events</span><span>Wedding</span><span>Reception</span><span>Actions</span>
+      </div>
+      <div class="gt-row" onclick="showTab('detail')">
+        <input type="checkbox" checked style="accent-color:#534AB7;width:14px;height:14px;"/>
+        <div><div class="g-name">Sunita Patel</div><div class="g-email">sunita.p@gmail.com</div></div>
+        <div class="g-side">Bride's</div>
+        <div class="g-events">
+          <div class="ev-pip" style="background:#D4537E;"></div>
+          <div class="ev-pip" style="background:#EF9F27;"></div>
+          <div class="ev-pip" style="background:#1D9E75;"></div>
+          <div class="ev-pip" style="background:#534AB7;"></div>
+          <div class="ev-pip" style="background:#D85A30;"></div>
+        </div>
+        <span class="rsvp-pill r-confirmed">Confirmed</span>
+        <span class="rsvp-pill r-confirmed">Confirmed</span>
+        <span class="row-action">View →</span>
+      </div>
+      <div class="gt-row">
+        <input type="checkbox" checked style="accent-color:#534AB7;width:14px;height:14px;"/>
+        <div><div class="g-name">Raj Mehta</div><div class="g-email">raj.mehta@outlook.com</div></div>
+        <div class="g-side">Groom's</div>
+        <div class="g-events">
+          <div class="ev-pip" style="background:#534AB7;"></div>
+          <div class="ev-pip" style="background:#D85A30;"></div>
+        </div>
+        <span class="rsvp-pill r-pending">Pending</span>
+        <span class="rsvp-pill r-pending">Pending</span>
+        <span class="row-action">View →</span>
+      </div>
+      <div class="gt-row">
+        <input type="checkbox" checked style="accent-color:#534AB7;width:14px;height:14px;"/>
+        <div><div class="g-name">Anita Sharma</div><div class="g-email">anita.s@yahoo.com</div></div>
+        <div class="g-side">Bride's</div>
+        <div class="g-events">
+          <div class="ev-pip" style="background:#D4537E;"></div>
+          <div class="ev-pip" style="background:#1D9E75;"></div>
+          <div class="ev-pip" style="background:#534AB7;"></div>
+          <div class="ev-pip" style="background:#D85A30;"></div>
+        </div>
+        <span class="rsvp-pill r-confirmed">Confirmed</span>
+        <span class="rsvp-pill r-confirmed">Confirmed</span>
+        <span class="row-action">View →</span>
+      </div>
+      <div class="gt-row">
+        <input type="checkbox" style="accent-color:#534AB7;width:14px;height:14px;"/>
+        <div><div class="g-name">Vikram Nair</div><div class="g-email">v.nair@gmail.com</div></div>
+        <div class="g-side">Groom's</div>
+        <div class="g-events">
+          <div class="ev-pip" style="background:#534AB7;"></div>
+          <div class="ev-pip" style="background:#D85A30;"></div>
+        </div>
+        <span class="rsvp-pill r-declined">Declined</span>
+        <span class="rsvp-pill r-declined">Declined</span>
+        <span class="row-action">View →</span>
+      </div>
+      <div class="gt-row">
+        <input type="checkbox" style="accent-color:#534AB7;width:14px;height:14px;"/>
+        <div><div class="g-name">Preethi Krishnan</div><div class="g-email">preethi.k@gmail.com</div></div>
+        <div class="g-side">Bride's</div>
+        <div class="g-events">
+          <div class="ev-pip" style="background:#D4537E;"></div>
+          <div class="ev-pip" style="background:#EF9F27;"></div>
+          <div class="ev-pip" style="background:#534AB7;"></div>
+          <div class="ev-pip" style="background:#D85A30;"></div>
+        </div>
+        <span class="rsvp-pill r-pending">Pending</span>
+        <span class="rsvp-pill r-pending">Pending</span>
+        <span class="row-action">View →</span>
+      </div>
+      <div class="gt-row">
+        <input type="checkbox" style="accent-color:#534AB7;width:14px;height:14px;"/>
+        <div><div class="g-name">Deepak Iyer</div><div class="g-email">deepak.i@gmail.com</div></div>
+        <div class="g-side">Groom's</div>
+        <div class="g-events">
+          <div class="ev-pip" style="background:#1D9E75;"></div>
+          <div class="ev-pip" style="background:#534AB7;"></div>
+          <div class="ev-pip" style="background:#D85A30;"></div>
+        </div>
+        <span class="rsvp-pill r-confirmed">Confirmed</span>
+        <span class="rsvp-pill r-na">N/A</span>
+        <span class="row-action">View →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUEST DETAIL -->
+  <div id="tab-detail" class="screen">
+    <button style="font-size:13px;color:#534AB7;background:none;border:none;cursor:pointer;margin-bottom:16px;padding:0;" onclick="showTab('guests')">← Back to guest list</button>
+    <div class="guest-panel">
+      <div class="gp-header">
+        <div class="gp-avatar">SP</div>
+        <div style="flex:1;">
+          <div class="gp-name">Sunita Patel</div>
+          <div class="gp-meta">Bride's side · sunita.p@gmail.com · +1 312 555 0198</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button style="padding:6px 12px;border-radius:7px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;background:transparent;cursor:pointer;">Edit</button>
+          <button style="padding:6px 12px;border-radius:7px;background:#534AB7;color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;">Send reminder</button>
+        </div>
+      </div>
+      <div class="sl">RSVP status per event</div>
+      <div style="margin-bottom:16px;">
+        <div class="gp-ev-row">
+          <div class="gp-ev-left"><div class="gp-ev-dot" style="background:#D4537E;"></div><div><div class="gp-ev-name">Mehndi</div><div class="gp-ev-date">Nov 12 · 6:00 PM</div></div></div>
+          <span class="rsvp-pill r-confirmed">Confirmed</span>
+        </div>
+        <div class="gp-ev-row">
+          <div class="gp-ev-left"><div class="gp-ev-dot" style="background:#EF9F27;"></div><div><div class="gp-ev-name">Haldi</div><div class="gp-ev-date">Nov 13 · 10:00 AM</div></div></div>
+          <span class="rsvp-pill r-confirmed">Confirmed</span>
+        </div>
+        <div class="gp-ev-row">
+          <div class="gp-ev-left"><div class="gp-ev-dot" style="background:#1D9E75;"></div><div><div class="gp-ev-name">Sangeet</div><div class="gp-ev-date">Nov 13 · 7:00 PM</div></div></div>
+          <span class="rsvp-pill r-confirmed">Confirmed</span>
+        </div>
+        <div class="gp-ev-row">
+          <div class="gp-ev-left"><div class="gp-ev-dot" style="background:#534AB7;"></div><div><div class="gp-ev-name">Wedding</div><div class="gp-ev-date">Nov 14 · 11:00 AM</div></div></div>
+          <span class="rsvp-pill r-confirmed">Confirmed</span>
+        </div>
+        <div class="gp-ev-row">
+          <div class="gp-ev-left"><div class="gp-ev-dot" style="background:#D85A30;"></div><div><div class="gp-ev-name">Reception</div><div class="gp-ev-date">Nov 14 · 7:00 PM</div></div></div>
+          <span class="rsvp-pill r-confirmed">Confirmed</span>
+        </div>
+      </div>
+      <div style="padding:12px;background:#f5f4f0;border-radius:8px;margin-bottom:16px;">
+        <div style="font-size:11px;color:#888;margin-bottom:4px;">Dietary notes</div>
+        <div style="font-size:13px;">Vegetarian only, no onion or garlic</div>
+      </div>
+      <div class="gp-actions">
+        <button class="gp-btn">Remove guest</button>
+        <button class="gp-btn">Reassign events</button>
+        <button class="gp-btn-primary">Send RSVP reminder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUEST-FACING RSVP PAGE -->
+  <div id="tab-rsvp" class="screen">
+    <div style="background:#f5f4f0;border-radius:12px;padding:20px;">
+      <div class="rsvp-page">
+        <div class="rsvp-hero">
+          <div class="rsvp-hero-names">Priya & Arjun</div>
+          <div class="rsvp-hero-date">November 14, 2025 · Chicago, Illinois</div>
+          <div class="rsvp-divider">
+            <div class="rsvp-line"></div>
+            <div class="rsvp-diamond"></div>
+            <div class="rsvp-line"></div>
+          </div>
+        </div>
+        <div class="rsvp-greeting">
+          <h3>You're invited, Sunita!</h3>
+          <p>Priya & Arjun would love to have you celebrate with them. Please let them know which events you can attend.</p>
+        </div>
+        <div class="sl">Your invitations</div>
+        <div class="rsvp-ev-card">
+          <div class="rsvp-ev-header">
+            <div class="rsvp-ev-dot" style="background:#D4537E;"></div>
+            <div><div class="rsvp-ev-name">Mehndi night</div><div class="rsvp-ev-info">Wed Nov 12 · 6:00 PM · The Grand Ballroom</div></div>
+          </div>
+          <div class="rsvp-choice">
+            <div class="rsvp-opt yes">✓ Attending</div>
+            <div class="rsvp-opt">Can't make it</div>
+          </div>
+        </div>
+        <div class="rsvp-ev-card">
+          <div class="rsvp-ev-header">
+            <div class="rsvp-ev-dot" style="background:#1D9E75;"></div>
+            <div><div class="rsvp-ev-name">Sangeet</div><div class="rsvp-ev-info">Thu Nov 13 · 7:00 PM · The Grand Ballroom</div></div>
+          </div>
+          <div class="rsvp-choice">
+            <div class="rsvp-opt yes">✓ Attending</div>
+            <div class="rsvp-opt">Can't make it</div>
+          </div>
+        </div>
+        <div class="rsvp-ev-card">
+          <div class="rsvp-ev-header">
+            <div class="rsvp-ev-dot" style="background:#534AB7;"></div>
+            <div><div class="rsvp-ev-name">Wedding ceremony</div><div class="rsvp-ev-info">Fri Nov 14 · 11:00 AM · Sacred Heart Temple</div></div>
+          </div>
+          <div class="rsvp-choice">
+            <div class="rsvp-opt">Attending</div>
+            <div class="rsvp-opt no">✗ Can't make it</div>
+          </div>
+        </div>
+        <div class="rsvp-ev-card">
+          <div class="rsvp-ev-header">
+            <div class="rsvp-ev-dot" style="background:#D85A30;"></div>
+            <div><div class="rsvp-ev-name">Reception</div><div class="rsvp-ev-info">Fri Nov 14 · 7:00 PM · The Grand Ballroom</div></div>
+          </div>
+          <div class="rsvp-choice">
+            <div class="rsvp-opt yes">✓ Attending</div>
+            <div class="rsvp-opt">Can't make it</div>
+          </div>
+        </div>
+        <div class="rsvp-notes" style="margin-top:10px;">
+          <label>Dietary requirements or notes for Priya & Arjun</label>
+          <textarea placeholder="e.g. vegetarian, nut allergy, wheelchair access needed..."></textarea>
+        </div>
+        <button class="rsvp-submit" onclick="showTab('confirm')">Submit my RSVP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION -->
+  <div id="tab-confirm" class="screen">
+    <div style="background:#f5f4f0;border-radius:12px;padding:32px 20px;">
+      <div class="confirm-screen">
+        <div class="confirm-icon"></div>
+        <div class="confirm-title">You're all set, Sunita!</div>
+        <p class="confirm-sub">Priya & Arjun have been notified. You'll receive a calendar invite and reminder closer to each event.</p>
+        <div class="confirm-summary">
+          <div class="cs-label">Your RSVP summary</div>
+          <div class="cs-row">
+            <div class="cs-dot" style="background:#D4537E;"></div>
+            <span class="cs-name">Mehndi · Nov 12</span>
+            <span class="rsvp-pill r-confirmed">Attending</span>
+          </div>
+          <div class="cs-row">
+            <div class="cs-dot" style="background:#1D9E75;"></div>
+            <span class="cs-name">Sangeet · Nov 13</span>
+            <span class="rsvp-pill r-confirmed">Attending</span>
+          </div>
+          <div class="cs-row">
+            <div class="cs-dot" style="background:#534AB7;"></div>
+            <span class="cs-name">Wedding · Nov 14</span>
+            <span class="rsvp-pill r-declined">Can't attend</span>
+          </div>
+          <div class="cs-row">
+            <div class="cs-dot" style="background:#D85A30;"></div>
+            <span class="cs-name">Reception · Nov 14</span>
+            <span class="rsvp-pill r-confirmed">Attending</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#888;line-height:1.5;">Need to change your response? Use the link in your invitation email anytime before Nov 1.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showTab(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    const tabs = ['guests','detail','rsvp','confirm'];
+    const idx = tabs.indexOf(id);
+    if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+  }
+</script>
+</body>
+</html>

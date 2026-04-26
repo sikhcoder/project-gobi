@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event detail page — Indian wedding platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; }
+    .container { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.1); padding: 28px; }
+    h1 { font-size: 13px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+    .tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 500; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .sl { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .ev-header-band { background: #1A0F38; border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .ev-hb-left { display: flex; align-items: center; gap: 14px; }
+    .ev-hb-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+    .ev-hb-name { font-size: 22px; font-weight: 500; color: #EDD9FF; margin-bottom: 4px; }
+    .ev-hb-meta { font-size: 13px; color: #C9A8F0; }
+    .ev-hb-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .ev-btn { padding: 7px 14px; border-radius: 8px; border: 0.5px solid rgba(255,255,255,0.2); color: #EDD9FF; background: transparent; font-size: 12px; cursor: pointer; }
+    .ev-btn-primary { padding: 7px 14px; border-radius: 8px; background: #534AB7; color: #fff; border: none; font-size: 12px; font-weight: 500; cursor: pointer; }
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+    .sc { background: #f5f4f0; border-radius: 10px; padding: 14px; }
+    .sc-label { font-size: 11px; color: #888; margin-bottom: 5px; }
+    .sc-val { font-size: 20px; font-weight: 500; margin-bottom: 2px; }
+    .sc-sub { font-size: 11px; color: #888; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .panel { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .panel-header span { font-size: 14px; font-weight: 500; }
+    .panel-header a { font-size: 12px; color: #534AB7; cursor: pointer; }
+    .detail-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { font-size: 12px; color: #888; }
+    .detail-val { font-size: 13px; font-weight: 500; text-align: right; max-width: 60%; }
+    .rsvp-bar-track { height: 8px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden; display: flex; margin-bottom: 8px; }
+    .rsvp-seg { height: 8px; }
+    .rsvp-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .rl-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #888; }
+    .rl-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .dc-card { background: #f5f4f0; border-radius: 8px; padding: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+    .dc-swatch { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg,#FF6B9D,#FFB347,#9B59B6); }
+    .dc-text h4 { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .dc-text p { font-size: 12px; color: #888; margin: 0; line-height: 1.4; }
+    .rsvp-pill { font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; display: inline-block; }
+    .r-confirmed { background: #EAF3DE; color: #3B6D11; }
+    .r-pending { background: #FAEEDA; color: #854F0B; }
+    .r-declined { background: #FCEBEB; color: #A32D2D; }
+    .guest-mini-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .guest-mini-row:last-child { border-bottom: none; }
+    .gm-avatar { width: 28px; height: 28px; border-radius: 50%; background: #EEEDFE; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: #3C3489; flex-shrink: 0; }
+    .gm-name { font-size: 13px; flex: 1; }
+    .gm-side { font-size: 11px; color: #888; }
+    .vendor-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .vendor-row:last-child { border-bottom: none; }
+    .v-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .v-name { font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+    .v-cat { font-size: 11px; color: #888; }
+    .v-status { font-size: 10px; padding: 2px 8px; border-radius: 8px; font-weight: 500; }
+    .vs-confirmed { background: #EAF3DE; color: #3B6D11; }
+    .vs-pending { background: #FAEEDA; color: #854F0B; }
+    .timeline { position: relative; padding-left: 24px; }
+    .tl-item { position: relative; margin-bottom: 18px; }
+    .tl-item::before { content: ''; position: absolute; left: -20px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: #534AB7; }
+    .tl-item::after { content: ''; position: absolute; left: -17px; top: 14px; width: 2px; height: calc(100% + 8px); background: rgba(0,0,0,0.1); }
+    .tl-item:last-child::after { display: none; }
+    .tl-time { font-size: 11px; font-weight: 500; color: #534AB7; margin-bottom: 2px; }
+    .tl-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .tl-detail { font-size: 12px; color: #888; }
+    .tl-tags { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+    .tl-tag { font-size: 10px; padding: 2px 7px; border-radius: 8px; background: #f5f4f0; color: #888; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Event detail page — Indian wedding platform</h1>
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab" onclick="showTab('guests')">Guests & RSVP</div>
+    <div class="tab" onclick="showTab('vendors')">Vendors</div>
+    <div class="tab" onclick="showTab('timeline')">Day-of timeline</div>
+  </div>
+
+  <div id="tab-overview" class="screen active">
+    <div class="ev-header-band">
+      <div class="ev-hb-left">
+        <div class="ev-hb-dot" style="background:#1D9E75;"></div>
+        <div><div class="ev-hb-name">Sangeet</div><div class="ev-hb-meta">Thursday, November 13, 2025 · 7:00 PM – 11:30 PM · The Grand Ballroom, Chicago</div></div>
+      </div>
+      <div class="ev-hb-actions">
+        <button class="ev-btn">Edit event</button>
+        <button class="ev-btn-primary">Send RSVPs</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="sc"><div class="sc-label">Invited</div><div class="sc-val">240</div><div class="sc-sub">Guests assigned</div></div>
+      <div class="sc"><div class="sc-label">Confirmed</div><div class="sc-val" style="color:#1D9E75;">152</div><div class="sc-sub">63% responded</div></div>
+      <div class="sc"><div class="sc-label">Pending</div><div class="sc-val" style="color:#854F0B;">71</div><div class="sc-sub">Awaiting response</div></div>
+      <div class="sc"><div class="sc-label">Budget</div><div class="sc-val">$7,000</div><div class="sc-sub">$3,200 spent</div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header"><span>Event details</span><a>Edit →</a></div>
+        <div class="detail-row"><span class="detail-label">Date</span><span class="detail-val">Thursday, November 13, 2025</span></div>
+        <div class="detail-row"><span class="detail-label">Time</span><span class="detail-val">7:00 PM – 11:30 PM</span></div>
+        <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-val">The Grand Ballroom, 200 N Michigan Ave</span></div>
+        <div class="detail-row"><span class="detail-label">Expected headcount</span><span class="detail-val">~160 guests</span></div>
+        <div class="detail-row"><span class="detail-label">Dress code</span><span class="detail-val">Festive Indian — bright colours welcome</span></div>
+        <div class="detail-row"><span class="detail-label">Notes for guests</span><span class="detail-val">Dance performances at 8:30 PM. Dinner at 9:00 PM.</span></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span>RSVP progress</span><a onclick="showTab('guests')">View guests →</a></div>
+        <div class="rsvp-bar-track">
+          <div class="rsvp-seg" style="background:#1D9E75;width:63%;"></div>
+          <div class="rsvp-seg" style="background:#FCEBEB;width:7%;"></div>
+          <div class="rsvp-seg" style="background:#FAEEDA;width:30%;"></div>
+        </div>
+        <div class="rsvp-legend">
+          <div class="rl-item"><div class="rl-dot" style="background:#1D9E75;"></div>Confirmed (152)</div>
+          <div class="rl-item"><div class="rl-dot" style="background:#E24B4A;"></div>Declined (17)</div>
+          <div class="rl-item"><div class="rl-dot" style="background:#EF9F27;"></div>Pending (71)</div>
+        </div>
+        <div class="dc-card">
+          <div class="dc-swatch"></div>
+          <div class="dc-text"><h4>Dress code: Festive Indian</h4><p>Bright colours, lehengas, sherwanis, sarees welcome. No white or black please.</p></div>
+        </div>
+        <div style="font-size:12px;color:#888;line-height:1.5;">71 guests haven't responded yet. <span style="color:#534AB7;cursor:pointer;">Send a reminder →</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-guests" class="screen">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Sangeet guest list (240)</span>
+        <div style="display:flex;gap:8px;">
+          <button style="padding:5px 12px;border-radius:7px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;background:transparent;cursor:pointer;">Export CSV</button>
+          <button style="padding:5px 12px;border-radius:7px;background:#534AB7;color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;">Send reminder to pending</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="padding:5px 12px;border-radius:20px;background:#534AB7;color:#fff;font-size:12px;font-weight:500;cursor:pointer;">All (240)</span>
+        <span style="padding:5px 12px;border-radius:20px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;cursor:pointer;">Confirmed (152)</span>
+        <span style="padding:5px 12px;border-radius:20px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;cursor:pointer;">Pending (71)</span>
+        <span style="padding:5px 12px;border-radius:20px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;color:#888;cursor:pointer;">Declined (17)</span>
+      </div>
+      <div class="guest-mini-row"><div class="gm-avatar">SP</div><span class="gm-name">Sunita Patel</span><span class="gm-side">Bride's side</span><span class="rsvp-pill r-confirmed">Confirmed</span></div>
+      <div class="guest-mini-row"><div class="gm-avatar" style="background:#E1F5EE;color:#085041;">RM</div><span class="gm-name">Raj Mehta</span><span class="gm-side">Groom's side</span><span class="rsvp-pill r-pending">Pending</span></div>
+      <div class="guest-mini-row"><div class="gm-avatar" style="background:#FBEAF0;color:#72243E;">AS</div><span class="gm-name">Anita Sharma</span><span class="gm-side">Bride's side</span><span class="rsvp-pill r-confirmed">Confirmed</span></div>
+      <div class="guest-mini-row"><div class="gm-avatar" style="background:#FAEEDA;color:#633806;">VN</div><span class="gm-name">Vikram Nair</span><span class="gm-side">Groom's side</span><span class="rsvp-pill r-declined">Declined</span></div>
+      <div class="guest-mini-row"><div class="gm-avatar" style="background:#E6F1FB;color:#0C447C;">PK</div><span class="gm-name">Preethi Krishnan</span><span class="gm-side">Bride's side</span><span class="rsvp-pill r-pending">Pending</span></div>
+      <div style="padding:12px 0;text-align:center;font-size:13px;color:#534AB7;cursor:pointer;">View all 240 guests →</div>
+    </div>
+  </div>
+
+  <div id="tab-vendors" class="screen">
+    <div class="panel" style="margin-bottom:16px;">
+      <div class="panel-header"><span>Vendors for Sangeet</span><a>+ Add vendor →</a></div>
+      <div class="vendor-row">
+        <div class="v-icon" style="background:#EEEDFE;color:#3C3489;">PH</div>
+        <div style="flex:1;"><div class="v-name">Patel & Co. Photography</div><div class="v-cat">Photography & film · Full coverage</div></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:500;margin-bottom:2px;">$2,000</div><span class="v-status vs-confirmed">Confirmed</span></div>
+      </div>
+      <div class="vendor-row">
+        <div class="v-icon" style="background:#E1F5EE;color:#085041;">CT</div>
+        <div style="flex:1;"><div class="v-name">Sharma Kitchen</div><div class="v-cat">Catering · Dinner for 160 guests</div></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:500;margin-bottom:2px;">$4,800</div><span class="v-status vs-confirmed">Confirmed</span></div>
+      </div>
+      <div class="vendor-row">
+        <div class="v-icon" style="background:#FAEEDA;color:#633806;">DJ</div>
+        <div style="flex:1;"><div class="v-name">DJ Ravi</div><div class="v-cat">Music & entertainment · 7 PM – 11:30 PM</div></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:500;margin-bottom:2px;">$1,800</div><span class="v-status vs-pending">Pending</span></div>
+      </div>
+      <div class="vendor-row">
+        <div class="v-icon" style="background:#FBEAF0;color:#72243E;">DC</div>
+        <div style="flex:1;"><div class="v-name">Decor & florals</div><div class="v-cat">Not booked yet</div></div>
+        <div style="text-align:right;"><div style="font-size:13px;color:#888;margin-bottom:2px;">—</div><span class="v-status" style="background:#f5f4f0;color:#888;">Find vendor</span></div>
+      </div>
+    </div>
+    <div style="background:#f5f4f0;border-radius:10px;padding:14px;font-size:13px;color:#888;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <span>You still need a decor & florals vendor for Sangeet.</span>
+      <button style="padding:6px 12px;border-radius:7px;background:#534AB7;color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;">Browse vendors</button>
+    </div>
+  </div>
+
+  <div id="tab-timeline" class="screen">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:500;">Sangeet · Thursday Nov 13</div>
+      <button style="padding:6px 14px;border-radius:8px;background:#534AB7;color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;">Export PDF</button>
+    </div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-time">4:00 PM</div><div class="tl-name">Venue opens — vendor setup begins</div><div class="tl-detail">DJ Ravi, caterers, and decor team arrive for setup</div><div class="tl-tags"><span class="tl-tag">DJ Ravi</span><span class="tl-tag">Sharma Kitchen</span></div></div>
+      <div class="tl-item"><div class="tl-time">6:00 PM</div><div class="tl-name">Photography setup & family arrivals</div><div class="tl-detail">Patel & Co. set up photo area. Immediate family arrives for pre-event photos.</div><div class="tl-tags"><span class="tl-tag">Patel & Co.</span><span class="tl-tag">Family only</span></div></div>
+      <div class="tl-item"><div class="tl-time">7:00 PM</div><div class="tl-name">Doors open — guests arrive</div><div class="tl-detail">Welcome drinks and appetisers. DJ plays background music.</div><div class="tl-tags"><span class="tl-tag">All guests</span><span class="tl-tag">DJ Ravi</span></div></div>
+      <div class="tl-item"><div class="tl-time">7:30 PM</div><div class="tl-name">Couple's entrance</div><div class="tl-detail">Priya & Arjun enter to choreographed song. Photography priority moment.</div><div class="tl-tags"><span class="tl-tag">Couple</span><span class="tl-tag">Patel & Co.</span></div></div>
+      <div class="tl-item"><div class="tl-time">8:00 PM</div><div class="tl-name">Dance performances begin</div><div class="tl-detail">Family and friends performances. Order: bride's side then groom's side.</div><div class="tl-tags"><span class="tl-tag">Family & friends</span></div></div>
+      <div class="tl-item"><div class="tl-time">9:00 PM</div><div class="tl-name">Dinner is served</div><div class="tl-detail">Buffet opens. Catering team manages food stations.</div><div class="tl-tags"><span class="tl-tag">Sharma Kitchen</span><span class="tl-tag">160 guests</span></div></div>
+      <div class="tl-item"><div class="tl-time">9:45 PM</div><div class="tl-name">Open dance floor</div><div class="tl-detail">DJ transitions to Bollywood and Bhangra set.</div><div class="tl-tags"><span class="tl-tag">DJ Ravi</span></div></div>
+      <div class="tl-item"><div class="tl-time">11:30 PM</div><div class="tl-name">Event ends — vendor pack down</div><div class="tl-detail">Venue must be cleared by 12:30 AM.</div><div class="tl-tags"><span class="tl-tag">All vendors</span></div></div>
+    </div>
+  </div>
+</div>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const tabs = ['overview','guests','vendors','timeline'];
+  const idx = tabs.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>
